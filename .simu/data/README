@@ -1,0 +1,99 @@
+# TODO: old, some name changed
+# Data organization
+## Naming convention
+For all simulations: 
+- "model_1_" with "1" means WITH "data features" and,
+- "model_2_" with "2" means NO "data features".
+_ "model_i_setting_j" with j=1,2,3 corresponds to three different settings (see below).
+- For all, "res$mle" is always the initial estimator (so inconsistent MLE in the case of data features)
+- For data features, "res$em" is always the consistent MLE (even thought it is not an EM algorithm).
+- For all "res$time" and "res$iteration" refer to time and number of iteration for IB.
+- For NO data features, "res$bbc" refer to bootstrap bias correction.
+- For logistic only with NO data features, "res$br" refer to bias reduction GLM (BRGLM).
+
+# Design of experiment
+# NOTE!!! Hereafter, I do not include intercept and other extra parameters 
+# (variance, ...) into p.
+
+# ----------------
+# Case : logistic
+# ----------------
+# +---------+------+-----+-------+
+# | Setting |   n  |  p  | p/n   |
+# +---------+------+-----+-------+
+# |       1 | 2000 | 200 | 0.100 |
+# |       2 | 4000 | 300 | 0.075 |
+# |       3 | 8000 | 400 | 0.050 |
+# +---------+------+-----+-------+
+
+# Non-zero coefficients:
+# intercept is 1
+# beta_nz <- c(1,rep(3,5),rep(-5,5),rep(7,5))
+
+# Design:
+# Normal (0, 1/p)
+
+# Data features: random misclassification
+# FP rbeta(1.5,50)
+# FN rbeta(1.1,20)
+# mu_u <- 1.5 / 51.5 (mean FP rate)
+# mu_v <- 1.1 / 21.1 (mean FN rate)
+# R code :
+...
+u1 <- rbeta(N, shape1 = 1.5, shape2 = 50)
+u2 <- rbeta(N, shape1 = 1.1, shape2 = 20)
+mu_star <- u1 * (1 - mu) + (1 - u2) * mu
+...
+
+# ----------------
+# Case : negative binomial
+# ----------------
+# +---------+-----+----+-------+
+# | Setting |  n  |  p | p/n   |
+# +---------+-----+----+-------+
+# |       1 | 200 | 40 | 0.200 |
+# |       2 | 400 | 50 | 0.125 |
+# |       3 | 800 | 60 | 0.075 |
+# +---------+-----+----+-------+
+
+# Non-zero coefficients:
+# intercept is 2
+# beta_nz <- c(2,1,-1)
+# sigma <- 0.7
+
+# Design:
+# Normal (0, 8/p)
+
+# Data features: random left censoring
+by a Poisson(3) variable
+# R code :
+...
+u <- rpois(length(y), lambda = 3)
+y[y<=u] <- u[y<=u]
+...
+
+# ----------------
+# Case : beta regression
+# ----------------
+# +---------+--------+------+-------+
+# | Setting |    n   |   p  | p/n   |
+# +---------+--------+------+-------+
+# |       1 |   2000 |  300 | 0.150 |
+# |       2 |   4000 |  400 | 0.100 |
+# |       3 |   8000 |  500 | 0.063 |
+# +---------+--------+------+-------+
+
+# Non-zero coefficients:
+# intercept is -0.5
+# beta_nz <- c(-0.5,rep(1,5),rep(-1.5,5),rep(2,5))
+# phi <- 5
+
+# Design:
+# Normal (0, 1/p)
+
+# Data features: rounding to nearest 10th + "shrinking" (to avoid exact 0 and 1)
+# R code :
+...
+y <- round(y,1)
+y <- (y*(n-1) + 0.5)/n
+...
