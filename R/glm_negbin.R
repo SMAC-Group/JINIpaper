@@ -19,6 +19,7 @@ glm_negbin <- function(y, x, lambda, maxit=50L, epsilon=1e-07, trace=FALSE){
   fit <- glm.nb(y ~ x)
   bh <- coef(fit)
   th <-  1.0 / fit$theta
+  b0 <- bh + Inf
 
   d1 <- sqrt(2.0 * max(1.0, fit$df.residual))
   del <- 1
