@@ -73,7 +73,8 @@ for(m in na.omit(ind[id_slurm,])){
 
   ##------ MLE estimation (consistent) ----------------
   fit_em <- NULL
-  try(fit_em <- glm_negbin(y, x, lambda = 3, maxit = 1000L, trace = T), silent = TRUE)
+  #try(fit_em <- glm_negbin(y, x, lambda = 3, maxit = 1000L), silent = TRUE)
+  try(fit_em <- glm_negbin(y, x, lambda = 3), silent = TRUE)
   #sv <- res$mle[m,]
   #sv[p+2] <- log(sv[p+2])
   #try(fit_em <- optim(par = sv, fn = nll_max, method = "BFGS", y = y, x = cbind(1,x),
