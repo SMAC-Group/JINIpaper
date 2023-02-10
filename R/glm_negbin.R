@@ -19,7 +19,6 @@ glm_negbin <- function(y, x, lambda, maxit=50L, epsilon=1e-07, trace=FALSE){
   fit <- glm.nb(y ~ x)
   bh <- coef(fit)
   th <-  1.0 / fit$theta
-  b0 <- bh + Inf
 
   d1 <- sqrt(2.0 * max(1.0, fit$df.residual))
   del <- 1
@@ -29,13 +28,11 @@ glm_negbin <- function(y, x, lambda, maxit=50L, epsilon=1e-07, trace=FALSE){
 
   # alternate fitting beta and alpha
   while((iter <- iter + 1L) <= maxit && (abs(Lm0 - Lm)/d1 + abs(del)) > epsilon){
-  # while((iter <- iter + 1L) <= maxit && sqrt(del^2 + sum((b0 - bh)^2)) > epsilon){
     b0 <- bh
     t0 <- th
 
     # fit beta
     fit <- optim(par = bh, fn = nll_max_beta, alpha = th, y = y, x = cbind(1,x), lambda = lambda)
-    # fit <- optim(par = bh, fn = nll_max_beta, method = "BFGS", alpha = th, y = y, x = cbind(1,x), lambda = lambda)
     bh <- fit$par
 
     # fit alpha
