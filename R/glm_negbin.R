@@ -28,13 +28,14 @@ glm_negbin <- function(y, x, lambda, maxit=50L, epsilon=1e-07, trace=FALSE){
   iter <- 0L
 
   # alternate fitting beta and alpha
-  # while((iter <- iter + 1L) <= maxit && (abs(Lm0 - Lm)/d1 + abs(del)) > epsilon){
-  while((iter <- iter + 1L) <= maxit && sqrt(del^2 + sum((b0 - bh)^2)) > epsilon){
+  while((iter <- iter + 1L) <= maxit && (abs(Lm0 - Lm)/d1 + abs(del)) > epsilon){
+  # while((iter <- iter + 1L) <= maxit && sqrt(del^2 + sum((b0 - bh)^2)) > epsilon){
     b0 <- bh
     t0 <- th
 
     # fit beta
-    fit <- optim(par = bh, fn = nll_max_beta, method = "BFGS", alpha = th, y = y, x = cbind(1,x), lambda = lambda)
+    fit <- optim(par = bh, fn = nll_max_beta, alpha = th, y = y, x = cbind(1,x), lambda = lambda)
+    # fit <- optim(par = bh, fn = nll_max_beta, method = "BFGS", alpha = th, y = y, x = cbind(1,x), lambda = lambda)
     bh <- fit$par
 
     # fit alpha
