@@ -4,12 +4,14 @@
 \alias{make_logistic}
 \title{Construct a `glm` object for logistic regression with predefined coefficients}
 \usage{
-make_logistic(x, coefficients)
+make_logistic(x, coefficients, robust = FALSE)
 }
 \arguments{
 \item{x}{n x p design matrix (no intercept)}
 
 \item{coefficients}{p+1 vector of coefficients, the first coefficient is the intercept.}
+
+\item{robust}{use robust estimator}
 }
 \description{
 It creates an object of class \code{glm} with \code{family=binomial(link = "logit")},
