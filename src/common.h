@@ -39,4 +39,15 @@ typedef boost::math::policies::policy<
   boost::math::policies::overflow_error<boost::math::policies::ignore_error>
 > my_policy;
 
+// Sigmoid for logistic
+struct Sigmoid {
+  Sigmoid(){}
+  const double operator()(const double& x) const {return 0.1e1 / (0.1e1 + std::exp(-x));}
+};
+
+struct Indicator {
+  Indicator(){}
+  const double operator()(const double &t) const {return (t <= 0.5) ? 0.0 : 1.0;}
+};
+
 #endif

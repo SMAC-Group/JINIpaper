@@ -5,19 +5,6 @@
 // Implementation
 // ------------------
 // --------------
-// Misc
-// --------------
-struct Sigmoid {
-  Sigmoid(){}
-  const double operator()(const double& x) const {return 0.1e1 / (0.1e1 + std::exp(-x));}
-};
-
-struct Indicator {
-  Indicator(){}
-  const double operator()(const double &t) const {return (t <= 0.5) ? 0.0 : 1.0;}
-};
-
-// --------------
 // Logistic regression
 // --------------
 class mle_logistic: public Numer::MFuncGrad

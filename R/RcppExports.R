@@ -87,3 +87,120 @@ logLike_negbin <- function(beta, alpha, y, x, lambda) {
     .Call('_JINIpaper_logLike_negbin', PACKAGE = 'JINIpaper', beta, alpha, y, x, lambda)
 }
 
+#' Robust logistic regression initial (inconsistent) estimator with Tukey's weights
+#'
+#' @param y a vector of responses
+#' @param x a n x p matrix of design
+#' @param beta a p-vector of parameter (starting values)
+#' @param c tuning parameter for Tukey's weight (default value is 4.685061)
+#' @param maxit max number of iteration for IRWLS
+#' @param tol tolerance for stopping criterion
+#' @param verbose print info
+#' @export
+roblogisticMqle1 <- function(y, x, start, c = 4.685061, maxit = 200L, tol = 1e-7, verbose = FALSE) {
+    .Call('_JINIpaper_roblogisticMqle1', PACKAGE = 'JINIpaper', y, x, start, c, maxit, tol, verbose)
+}
+
+#' Robust logistic regression estimator with Tukey's weight
+#'
+#' @param y a vector of responses
+#' @param x a n x p matrix of design
+#' @param beta a p-vector of parameter (starting values)
+#' @param c tuning parameter for Tukey's weight (default value is 4.685061)
+#' @param maxit max number of iteration for IRWLS
+#' @param tol tolerance for stopping criterion
+#' @param verbose print info
+#' @export
+roblogisticMqle <- function(y, x, start, c = 4.685061, maxit = 200L, tol = 1e-7, verbose = FALSE) {
+    .Call('_JINIpaper_roblogisticMqle', PACKAGE = 'JINIpaper', y, x, start, c, maxit, tol, verbose)
+}
+
+#' Asymptotic variance of robust logistic regression estimator with Tukey's weights
+#'
+#' @param x a n x p matrix of design
+#' @param beta a p-vector of parameter (starting values)
+#' @param c tuning parameter for Tukey's weights (default value is 4.685061)
+#' @export
+roblogisticMqleVar <- function(x, start, c = 4.685061) {
+    .Call('_JINIpaper_roblogisticMqleVar', PACKAGE = 'JINIpaper', x, start, c)
+}
+
+#' Robust logistic regression initial estimator (inconsistent) with Tukey's weights
+#'
+#' @param y a vector of responses
+#' @param x a n x p matrix of design
+#' @param beta a p-vector of parameter (starting values)
+#' @param c tuning parameter for Tukey's weight (default value is 4.685061)
+#' @param maxit max number of iteration for IRWLS
+#' @param tol tolerance for stopping criterion
+#' @param verbose print info
+#' @export
+roblogisticWmle1 <- function(y, x, start, c = 4.685061, maxit = 200L, tol = 1e-7, verbose = FALSE) {
+    .Call('_JINIpaper_roblogisticWmle1', PACKAGE = 'JINIpaper', y, x, start, c, maxit, tol, verbose)
+}
+
+#' Robust logistic regression estimator with Tukey's weights
+#'
+#' @param y a vector of responses
+#' @param x a n x p matrix of design
+#' @param beta a p-vector of parameter (starting values)
+#' @param c tuning parameter for Tukey's weight (default value is 4.685061)
+#' @param maxit max number of iteration for IRWLS
+#' @param tol tolerance for stopping criterion
+#' @param verbose print info
+#' @export
+roblogisticWmle <- function(y, x, start, c = 4.685061, maxit = 200L, tol = 1e-7, verbose = FALSE) {
+    .Call('_JINIpaper_roblogisticWmle', PACKAGE = 'JINIpaper', y, x, start, c, maxit, tol, verbose)
+}
+
+#' Asymptotic variance of robust logistic regression estimator with Tukey's weights
+#'
+#' @param x a n x p matrix of design
+#' @param beta a p-vector of parameter (starting values)
+#' @param c tuning parameter for Tukey's weights (default value is 4.685061)
+#' @export
+roblogisticWmleVar <- function(x, start, c = 4.685061) {
+    .Call('_JINIpaper_roblogisticWmleVar', PACKAGE = 'JINIpaper', x, start, c)
+}
+
+#' Simulation of logistic regression
+#'
+#' @param x a n x p matrix of design
+#' @param beta a p-vector of parameter (starting values)
+#' @param seed for random number generator
+#' @export
+r_logistic <- function(beta, x, seed) {
+    .Call('_JINIpaper_r_logistic', PACKAGE = 'JINIpaper', beta, x, seed)
+}
+
+#' Iterative bootstrap for robust logistic regression with inconsistent initial estimator with Tukey's weights
+#'
+#' @param x a n x p matrix of design
+#' @param start an inconsistent estimator (also used as starting values)
+#' @param c tuning parameter for Tukey's weight (default value is 4.685061)
+#' @param H number of estimators for Monte Carlo approximation
+#' @param maxit max number of iteration for IRWLS
+#' @param tol tolerance for stopping criterion
+#' @param verbose print info
+#' @param seed for random number generator
+#' @export
+IBroblogisticWmle1 <- function(x, start, c = 4.685061, H = 200L, maxit = 200L, tol = 1e-7, verbose = FALSE, seed = 321L) {
+    .Call('_JINIpaper_IBroblogisticWmle1', PACKAGE = 'JINIpaper', x, start, c, H, maxit, tol, verbose, seed)
+}
+
+#' Iterative bootstrap for robust logistic regression with inconsistent initial estimator with Tukey's weights
+#'
+#' @param x a n x p matrix of design
+#' @param start an inconsistent estimator (also used as starting values)
+#' @param c tuning parameter for Tukey's weight (default value is 4.685061)
+#' @param H number of estimators for Monte Carlo approximation
+#' @param maxit max number of iteration for IRWLS
+#' @param tol tolerance for stopping criterion
+#' @param verbose print info
+#' @param seed for random number generator
+#' @param k constant for stochastic approximation (1 by default)
+#' @export
+StocApproblogisticWmle1 <- function(x, start, c = 4.685061, maxit = 10000L, tol = 1e-7, verbose = FALSE, seed = 321L, k = 1) {
+    .Call('_JINIpaper_StocApproblogisticWmle1', PACKAGE = 'JINIpaper', x, start, c, maxit, tol, verbose, seed, k)
+}
+

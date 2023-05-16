@@ -117,6 +117,149 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// roblogisticMqle1
+Rcpp::List roblogisticMqle1(Eigen::ArrayXd& y, Eigen::MatrixXd& x, Eigen::VectorXd& start, double c, unsigned int maxit, double tol, bool verbose);
+RcppExport SEXP _JINIpaper_roblogisticMqle1(SEXP ySEXP, SEXP xSEXP, SEXP startSEXP, SEXP cSEXP, SEXP maxitSEXP, SEXP tolSEXP, SEXP verboseSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< Eigen::ArrayXd& >::type y(ySEXP);
+    Rcpp::traits::input_parameter< Eigen::MatrixXd& >::type x(xSEXP);
+    Rcpp::traits::input_parameter< Eigen::VectorXd& >::type start(startSEXP);
+    Rcpp::traits::input_parameter< double >::type c(cSEXP);
+    Rcpp::traits::input_parameter< unsigned int >::type maxit(maxitSEXP);
+    Rcpp::traits::input_parameter< double >::type tol(tolSEXP);
+    Rcpp::traits::input_parameter< bool >::type verbose(verboseSEXP);
+    rcpp_result_gen = Rcpp::wrap(roblogisticMqle1(y, x, start, c, maxit, tol, verbose));
+    return rcpp_result_gen;
+END_RCPP
+}
+// roblogisticMqle
+Rcpp::List roblogisticMqle(Eigen::ArrayXd& y, Eigen::MatrixXd& x, Eigen::VectorXd& start, double c, unsigned int maxit, double tol, bool verbose);
+RcppExport SEXP _JINIpaper_roblogisticMqle(SEXP ySEXP, SEXP xSEXP, SEXP startSEXP, SEXP cSEXP, SEXP maxitSEXP, SEXP tolSEXP, SEXP verboseSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< Eigen::ArrayXd& >::type y(ySEXP);
+    Rcpp::traits::input_parameter< Eigen::MatrixXd& >::type x(xSEXP);
+    Rcpp::traits::input_parameter< Eigen::VectorXd& >::type start(startSEXP);
+    Rcpp::traits::input_parameter< double >::type c(cSEXP);
+    Rcpp::traits::input_parameter< unsigned int >::type maxit(maxitSEXP);
+    Rcpp::traits::input_parameter< double >::type tol(tolSEXP);
+    Rcpp::traits::input_parameter< bool >::type verbose(verboseSEXP);
+    rcpp_result_gen = Rcpp::wrap(roblogisticMqle(y, x, start, c, maxit, tol, verbose));
+    return rcpp_result_gen;
+END_RCPP
+}
+// roblogisticMqleVar
+Rcpp::List roblogisticMqleVar(Eigen::MatrixXd& x, Eigen::VectorXd& start, double c);
+RcppExport SEXP _JINIpaper_roblogisticMqleVar(SEXP xSEXP, SEXP startSEXP, SEXP cSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< Eigen::MatrixXd& >::type x(xSEXP);
+    Rcpp::traits::input_parameter< Eigen::VectorXd& >::type start(startSEXP);
+    Rcpp::traits::input_parameter< double >::type c(cSEXP);
+    rcpp_result_gen = Rcpp::wrap(roblogisticMqleVar(x, start, c));
+    return rcpp_result_gen;
+END_RCPP
+}
+// roblogisticWmle1
+Rcpp::List roblogisticWmle1(Eigen::ArrayXd& y, Eigen::MatrixXd& x, Eigen::VectorXd& start, double c, unsigned int maxit, double tol, bool verbose);
+RcppExport SEXP _JINIpaper_roblogisticWmle1(SEXP ySEXP, SEXP xSEXP, SEXP startSEXP, SEXP cSEXP, SEXP maxitSEXP, SEXP tolSEXP, SEXP verboseSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< Eigen::ArrayXd& >::type y(ySEXP);
+    Rcpp::traits::input_parameter< Eigen::MatrixXd& >::type x(xSEXP);
+    Rcpp::traits::input_parameter< Eigen::VectorXd& >::type start(startSEXP);
+    Rcpp::traits::input_parameter< double >::type c(cSEXP);
+    Rcpp::traits::input_parameter< unsigned int >::type maxit(maxitSEXP);
+    Rcpp::traits::input_parameter< double >::type tol(tolSEXP);
+    Rcpp::traits::input_parameter< bool >::type verbose(verboseSEXP);
+    rcpp_result_gen = Rcpp::wrap(roblogisticWmle1(y, x, start, c, maxit, tol, verbose));
+    return rcpp_result_gen;
+END_RCPP
+}
+// roblogisticWmle
+Rcpp::List roblogisticWmle(Eigen::ArrayXd& y, Eigen::MatrixXd& x, Eigen::VectorXd& start, double c, unsigned int maxit, double tol, bool verbose);
+RcppExport SEXP _JINIpaper_roblogisticWmle(SEXP ySEXP, SEXP xSEXP, SEXP startSEXP, SEXP cSEXP, SEXP maxitSEXP, SEXP tolSEXP, SEXP verboseSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< Eigen::ArrayXd& >::type y(ySEXP);
+    Rcpp::traits::input_parameter< Eigen::MatrixXd& >::type x(xSEXP);
+    Rcpp::traits::input_parameter< Eigen::VectorXd& >::type start(startSEXP);
+    Rcpp::traits::input_parameter< double >::type c(cSEXP);
+    Rcpp::traits::input_parameter< unsigned int >::type maxit(maxitSEXP);
+    Rcpp::traits::input_parameter< double >::type tol(tolSEXP);
+    Rcpp::traits::input_parameter< bool >::type verbose(verboseSEXP);
+    rcpp_result_gen = Rcpp::wrap(roblogisticWmle(y, x, start, c, maxit, tol, verbose));
+    return rcpp_result_gen;
+END_RCPP
+}
+// roblogisticWmleVar
+Rcpp::List roblogisticWmleVar(Eigen::MatrixXd& x, Eigen::VectorXd& start, double c);
+RcppExport SEXP _JINIpaper_roblogisticWmleVar(SEXP xSEXP, SEXP startSEXP, SEXP cSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< Eigen::MatrixXd& >::type x(xSEXP);
+    Rcpp::traits::input_parameter< Eigen::VectorXd& >::type start(startSEXP);
+    Rcpp::traits::input_parameter< double >::type c(cSEXP);
+    rcpp_result_gen = Rcpp::wrap(roblogisticWmleVar(x, start, c));
+    return rcpp_result_gen;
+END_RCPP
+}
+// r_logistic
+Eigen::ArrayXd r_logistic(Eigen::VectorXd& beta, Eigen::MatrixXd& x, unsigned int seed);
+RcppExport SEXP _JINIpaper_r_logistic(SEXP betaSEXP, SEXP xSEXP, SEXP seedSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< Eigen::VectorXd& >::type beta(betaSEXP);
+    Rcpp::traits::input_parameter< Eigen::MatrixXd& >::type x(xSEXP);
+    Rcpp::traits::input_parameter< unsigned int >::type seed(seedSEXP);
+    rcpp_result_gen = Rcpp::wrap(r_logistic(beta, x, seed));
+    return rcpp_result_gen;
+END_RCPP
+}
+// IBroblogisticWmle1
+Rcpp::List IBroblogisticWmle1(Eigen::MatrixXd& x, Eigen::VectorXd& start, double c, unsigned int H, unsigned int maxit, double tol, bool verbose, unsigned int seed);
+RcppExport SEXP _JINIpaper_IBroblogisticWmle1(SEXP xSEXP, SEXP startSEXP, SEXP cSEXP, SEXP HSEXP, SEXP maxitSEXP, SEXP tolSEXP, SEXP verboseSEXP, SEXP seedSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< Eigen::MatrixXd& >::type x(xSEXP);
+    Rcpp::traits::input_parameter< Eigen::VectorXd& >::type start(startSEXP);
+    Rcpp::traits::input_parameter< double >::type c(cSEXP);
+    Rcpp::traits::input_parameter< unsigned int >::type H(HSEXP);
+    Rcpp::traits::input_parameter< unsigned int >::type maxit(maxitSEXP);
+    Rcpp::traits::input_parameter< double >::type tol(tolSEXP);
+    Rcpp::traits::input_parameter< bool >::type verbose(verboseSEXP);
+    Rcpp::traits::input_parameter< unsigned int >::type seed(seedSEXP);
+    rcpp_result_gen = Rcpp::wrap(IBroblogisticWmle1(x, start, c, H, maxit, tol, verbose, seed));
+    return rcpp_result_gen;
+END_RCPP
+}
+// StocApproblogisticWmle1
+Rcpp::List StocApproblogisticWmle1(Eigen::MatrixXd& x, Eigen::VectorXd& start, double c, unsigned int maxit, double tol, bool verbose, unsigned int seed, double k);
+RcppExport SEXP _JINIpaper_StocApproblogisticWmle1(SEXP xSEXP, SEXP startSEXP, SEXP cSEXP, SEXP maxitSEXP, SEXP tolSEXP, SEXP verboseSEXP, SEXP seedSEXP, SEXP kSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< Eigen::MatrixXd& >::type x(xSEXP);
+    Rcpp::traits::input_parameter< Eigen::VectorXd& >::type start(startSEXP);
+    Rcpp::traits::input_parameter< double >::type c(cSEXP);
+    Rcpp::traits::input_parameter< unsigned int >::type maxit(maxitSEXP);
+    Rcpp::traits::input_parameter< double >::type tol(tolSEXP);
+    Rcpp::traits::input_parameter< bool >::type verbose(verboseSEXP);
+    Rcpp::traits::input_parameter< unsigned int >::type seed(seedSEXP);
+    Rcpp::traits::input_parameter< double >::type k(kSEXP);
+    rcpp_result_gen = Rcpp::wrap(StocApproblogisticWmle1(x, start, c, maxit, tol, verbose, seed, k));
+    return rcpp_result_gen;
+END_RCPP
+}
 
 static const R_CallMethodDef CallEntries[] = {
     {"_JINIpaper_em", (DL_FUNC) &_JINIpaper_em, 6},
@@ -126,6 +269,15 @@ static const R_CallMethodDef CallEntries[] = {
     {"_JINIpaper_nll_max_beta", (DL_FUNC) &_JINIpaper_nll_max_beta, 5},
     {"_JINIpaper_nll_max_alpha", (DL_FUNC) &_JINIpaper_nll_max_alpha, 5},
     {"_JINIpaper_logLike_negbin", (DL_FUNC) &_JINIpaper_logLike_negbin, 5},
+    {"_JINIpaper_roblogisticMqle1", (DL_FUNC) &_JINIpaper_roblogisticMqle1, 7},
+    {"_JINIpaper_roblogisticMqle", (DL_FUNC) &_JINIpaper_roblogisticMqle, 7},
+    {"_JINIpaper_roblogisticMqleVar", (DL_FUNC) &_JINIpaper_roblogisticMqleVar, 3},
+    {"_JINIpaper_roblogisticWmle1", (DL_FUNC) &_JINIpaper_roblogisticWmle1, 7},
+    {"_JINIpaper_roblogisticWmle", (DL_FUNC) &_JINIpaper_roblogisticWmle, 7},
+    {"_JINIpaper_roblogisticWmleVar", (DL_FUNC) &_JINIpaper_roblogisticWmleVar, 3},
+    {"_JINIpaper_r_logistic", (DL_FUNC) &_JINIpaper_r_logistic, 3},
+    {"_JINIpaper_IBroblogisticWmle1", (DL_FUNC) &_JINIpaper_IBroblogisticWmle1, 8},
+    {"_JINIpaper_StocApproblogisticWmle1", (DL_FUNC) &_JINIpaper_StocApproblogisticWmle1, 8},
     {NULL, NULL, 0}
 };
 
