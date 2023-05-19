@@ -188,6 +188,31 @@ IBroblogisticWmle1 <- function(x, start, c = 4.685061, H = 200L, maxit = 200L, t
     .Call('_JINIpaper_IBroblogisticWmle1', PACKAGE = 'JINIpaper', x, start, c, H, maxit, tol, verbose, seed)
 }
 
+#' Stochastic approximation for robust logistic regression with inconsistent initial estimator with Tukey's weights
+#'
+#' @param x a n x p matrix of design
+#' @param start an inconsistent estimator (also used as starting values)
+#' @param c tuning parameter for Tukey's weight (default value is 4.685061)
+#' @param maxit max number of iteration for IRWLS
+#' @param tol tolerance for stopping criterion
+#' @param verbose print info
+#' @param seed for random number generator
+#' @param k constant for stochastic approximation (1 by default)
+#' @export
+StocApproblogisticWmle1 <- function(x, start, c = 4.685061, maxit = 10000L, tol = 1e-7, verbose = FALSE, seed = 321L, k = 1) {
+    .Call('_JINIpaper_StocApproblogisticWmle1', PACKAGE = 'JINIpaper', x, start, c, maxit, tol, verbose, seed, k)
+}
+
+#' MLE for logistic regression with misclassified responses
+#'
+#' @param y a vector of responses
+#' @param x a n x p matrix of design
+#' @param c tuning parameter for Tukey's weight (default value is 4.685061)
+#' @export
+logistic_wmle <- function(y, x, c) {
+    .Call('_JINIpaper_logistic_wmle', PACKAGE = 'JINIpaper', y, x, c)
+}
+
 #' Iterative bootstrap for robust logistic regression with inconsistent initial estimator with Tukey's weights
 #'
 #' @param x a n x p matrix of design
@@ -198,9 +223,23 @@ IBroblogisticWmle1 <- function(x, start, c = 4.685061, H = 200L, maxit = 200L, t
 #' @param tol tolerance for stopping criterion
 #' @param verbose print info
 #' @param seed for random number generator
-#' @param k constant for stochastic approximation (1 by default)
 #' @export
-StocApproblogisticWmle1 <- function(x, start, c = 4.685061, maxit = 10000L, tol = 1e-7, verbose = FALSE, seed = 321L, k = 1) {
-    .Call('_JINIpaper_StocApproblogisticWmle1', PACKAGE = 'JINIpaper', x, start, c, maxit, tol, verbose, seed, k)
+logistic_wmle_ib <- function(x, start, c = 4.685061, H = 200L, maxit = 200L, tol = 1e-7, verbose = FALSE, seed = 321L) {
+    .Call('_JINIpaper_logistic_wmle_ib', PACKAGE = 'JINIpaper', x, start, c, H, maxit, tol, verbose, seed)
+}
+
+#' Stochastic approximation for robust logistic regression with inconsistent initial estimator with Tukey's weights
+#'
+#' @param x a n x p matrix of design
+#' @param start an inconsistent estimator (also used as starting values)
+#' @param c tuning parameter for Tukey's weight (default value is 4.685061)
+#' @param H number of estimators for Monte Carlo approximation
+#' @param maxit max number of iteration for IRWLS
+#' @param tol tolerance for stopping criterion
+#' @param verbose print info
+#' @param seed for random number generator
+#' @export
+logistic_wmle_stocapp <- function(x, start, c = 4.685061, maxit = 10000L, tol = 1e-5, verbose = FALSE, seed = 321L) {
+    .Call('_JINIpaper_logistic_wmle_stocapp', PACKAGE = 'JINIpaper', x, start, c, maxit, tol, verbose, seed)
 }
 
