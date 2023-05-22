@@ -2,7 +2,7 @@
 % Please edit documentation in R/RcppExports.R
 \name{StocApproblogisticWmle1}
 \alias{StocApproblogisticWmle1}
-\title{Iterative bootstrap for robust logistic regression with inconsistent initial estimator with Tukey's weights}
+\title{Stochastic approximation for robust logistic regression with inconsistent initial estimator with Tukey's weights}
 \usage{
 StocApproblogisticWmle1(
   x,
@@ -31,9 +31,7 @@ StocApproblogisticWmle1(
 \item{seed}{for random number generator}
 
 \item{k}{constant for stochastic approximation (1 by default)}
-
-\item{H}{number of estimators for Monte Carlo approximation}
 }
 \description{
-Iterative bootstrap for robust logistic regression with inconsistent initial estimator with Tukey's weights
+Stochastic approximation for robust logistic regression with inconsistent initial estimator with Tukey's weights
 }

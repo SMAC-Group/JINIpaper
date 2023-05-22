@@ -261,7 +261,7 @@ BEGIN_RCPP
 END_RCPP
 }
 // logistic_wmle
-Eigen::VectorXd logistic_wmle(Eigen::ArrayXd& y, Eigen::MatrixXd& x, double c);
+Rcpp::List logistic_wmle(Eigen::ArrayXd& y, Eigen::MatrixXd& x, double c);
 RcppExport SEXP _JINIpaper_logistic_wmle(SEXP ySEXP, SEXP xSEXP, SEXP cSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
@@ -270,41 +270,6 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< Eigen::MatrixXd& >::type x(xSEXP);
     Rcpp::traits::input_parameter< double >::type c(cSEXP);
     rcpp_result_gen = Rcpp::wrap(logistic_wmle(y, x, c));
-    return rcpp_result_gen;
-END_RCPP
-}
-// logistic_wmle_ib
-Rcpp::List logistic_wmle_ib(Eigen::MatrixXd& x, Eigen::VectorXd& start, double c, unsigned int H, unsigned int maxit, double tol, bool verbose, unsigned int seed);
-RcppExport SEXP _JINIpaper_logistic_wmle_ib(SEXP xSEXP, SEXP startSEXP, SEXP cSEXP, SEXP HSEXP, SEXP maxitSEXP, SEXP tolSEXP, SEXP verboseSEXP, SEXP seedSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< Eigen::MatrixXd& >::type x(xSEXP);
-    Rcpp::traits::input_parameter< Eigen::VectorXd& >::type start(startSEXP);
-    Rcpp::traits::input_parameter< double >::type c(cSEXP);
-    Rcpp::traits::input_parameter< unsigned int >::type H(HSEXP);
-    Rcpp::traits::input_parameter< unsigned int >::type maxit(maxitSEXP);
-    Rcpp::traits::input_parameter< double >::type tol(tolSEXP);
-    Rcpp::traits::input_parameter< bool >::type verbose(verboseSEXP);
-    Rcpp::traits::input_parameter< unsigned int >::type seed(seedSEXP);
-    rcpp_result_gen = Rcpp::wrap(logistic_wmle_ib(x, start, c, H, maxit, tol, verbose, seed));
-    return rcpp_result_gen;
-END_RCPP
-}
-// logistic_wmle_stocapp
-Rcpp::List logistic_wmle_stocapp(Eigen::MatrixXd& x, Eigen::VectorXd& start, double c, unsigned int maxit, double tol, bool verbose, unsigned int seed);
-RcppExport SEXP _JINIpaper_logistic_wmle_stocapp(SEXP xSEXP, SEXP startSEXP, SEXP cSEXP, SEXP maxitSEXP, SEXP tolSEXP, SEXP verboseSEXP, SEXP seedSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< Eigen::MatrixXd& >::type x(xSEXP);
-    Rcpp::traits::input_parameter< Eigen::VectorXd& >::type start(startSEXP);
-    Rcpp::traits::input_parameter< double >::type c(cSEXP);
-    Rcpp::traits::input_parameter< unsigned int >::type maxit(maxitSEXP);
-    Rcpp::traits::input_parameter< double >::type tol(tolSEXP);
-    Rcpp::traits::input_parameter< bool >::type verbose(verboseSEXP);
-    Rcpp::traits::input_parameter< unsigned int >::type seed(seedSEXP);
-    rcpp_result_gen = Rcpp::wrap(logistic_wmle_stocapp(x, start, c, maxit, tol, verbose, seed));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -327,8 +292,6 @@ static const R_CallMethodDef CallEntries[] = {
     {"_JINIpaper_IBroblogisticWmle1", (DL_FUNC) &_JINIpaper_IBroblogisticWmle1, 8},
     {"_JINIpaper_StocApproblogisticWmle1", (DL_FUNC) &_JINIpaper_StocApproblogisticWmle1, 8},
     {"_JINIpaper_logistic_wmle", (DL_FUNC) &_JINIpaper_logistic_wmle, 3},
-    {"_JINIpaper_logistic_wmle_ib", (DL_FUNC) &_JINIpaper_logistic_wmle_ib, 8},
-    {"_JINIpaper_logistic_wmle_stocapp", (DL_FUNC) &_JINIpaper_logistic_wmle_stocapp, 7},
     {NULL, NULL, 0}
 };
 

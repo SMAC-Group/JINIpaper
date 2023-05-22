@@ -1300,7 +1300,7 @@ double wmle_logistic::f_grad(
 //' @param c tuning parameter for Tukey's weight (default value is 4.685061)
 //' @export
 // [[Rcpp::export]]
-Eigen::VectorXd logistic_wmle(
+Rcpp::List logistic_wmle(
      Eigen::ArrayXd& y,
      Eigen::MatrixXd& x,
      double c
@@ -1313,9 +1313,14 @@ Eigen::VectorXd logistic_wmle(
    double prop = y.mean();
    beta(0) = std::log(prop) - std::log(1.0 - prop);
    wmle_logistic f(y,x,c);
-   Numer::optim_lbfgs(f,beta,fopt);
-   return beta;
- }
+   int res = Numer::optim_lbfgs(f,beta,fopt);
+   
+   return Rcpp::List::create(
+     Rcpp::Named("coefficients") = beta,
+     Rcpp::Named("fopt") = fopt,
+     Rcpp::Named("status") = res
+   );
+}
 
 Rcpp::List check(
     Eigen::ArrayXd& y,
@@ -1334,131 +1339,131 @@ Rcpp::List check(
   );
 }
 
-//' Iterative bootstrap for robust logistic regression with inconsistent initial estimator with Tukey's weights
-//'
-//' @param x a n x p matrix of design
-//' @param start an inconsistent estimator (also used as starting values)
-//' @param c tuning parameter for Tukey's weight (default value is 4.685061)
-//' @param H number of estimators for Monte Carlo approximation
-//' @param maxit max number of iteration for IRWLS
-//' @param tol tolerance for stopping criterion
-//' @param verbose print info
-//' @param seed for random number generator
-//' @export
-// [[Rcpp::export]]
-Rcpp::List logistic_wmle_ib(
-     Eigen::MatrixXd& x,
-     Eigen::VectorXd& start,
-     double c = 4.685061,
-     unsigned int H = 200,
-     unsigned int maxit=200,
-     double tol=1e-7,
-     bool verbose=false,
-     unsigned int seed=321
- ){
-   unsigned int p = x.cols();
-   unsigned int p1 = p+1;
-   
-   // data storage
-   Eigen::MatrixXd boot(p1,H);
-   Eigen::VectorXd Dbeta(p1),beta(p1),beta0(p1),pi(p1);
-   
-   // Iterative bootstrap
-   beta0 = start;
-   unsigned int it = 0;
-   while(it < maxit){
-     // Monte Carlo approximation
-     // #pragma omp parallel for num_threads(ncores)
-     for(unsigned int i=0; i<H; ++i){
-       unsigned int se = seed + i;
-       Eigen::ArrayXd y = r_logistic(beta0,x,se);
-       boot.col(i) = logistic_wmle(y,x,c);
-     }
-     pi = boot.rowwise().mean();
-     Dbeta = start - pi;
-     beta = beta0 + Dbeta;
-     
-     // Check convergence
-     double relE = std::sqrt(Dbeta.squaredNorm() / std::max(1e-20, start.squaredNorm()));
-     ++it;
-     
-     if(verbose) {
-       Rcpp::Rcout << "Relative error " << relE << " at iteration " << it << std::endl;
-     }
-     beta0 = beta;
-     
-     if(relE <= tol){
-       break;
-     }
-   }
-   
-   return Rcpp::List::create(
-     Rcpp::Named("coefficients") = beta0,
-     Rcpp::Named("maxit") = it,
-     Rcpp::Named("diff") = Dbeta
-   );
- }
+// //' Iterative bootstrap for robust logistic regression with inconsistent initial estimator with Tukey's weights
+// //'
+// //' @param x a n x p matrix of design
+// //' @param start an inconsistent estimator (also used as starting values)
+// //' @param c tuning parameter for Tukey's weight (default value is 4.685061)
+// //' @param H number of estimators for Monte Carlo approximation
+// //' @param maxit max number of iteration for IRWLS
+// //' @param tol tolerance for stopping criterion
+// //' @param verbose print info
+// //' @param seed for random number generator
+// //' @export
+// // [[Rcpp::export]]
+// Rcpp::List logistic_wmle_ib(
+//      Eigen::MatrixXd& x,
+//      Eigen::VectorXd& start,
+//      double c = 4.685061,
+//      unsigned int H = 200,
+//      unsigned int maxit=200,
+//      double tol=1e-7,
+//      bool verbose=false,
+//      unsigned int seed=321
+//  ){
+//    unsigned int p = x.cols();
+//    unsigned int p1 = p+1;
+//    
+//    // data storage
+//    Eigen::MatrixXd boot(p1,H);
+//    Eigen::VectorXd Dbeta(p1),beta(p1),beta0(p1),pi(p1);
+//    
+//    // Iterative bootstrap
+//    beta0 = start;
+//    unsigned int it = 0;
+//    while(it < maxit){
+//      // Monte Carlo approximation
+//      // #pragma omp parallel for num_threads(ncores)
+//      for(unsigned int i=0; i<H; ++i){
+//        unsigned int se = seed + i;
+//        Eigen::ArrayXd y = r_logistic(beta0,x,se);
+//        boot.col(i) = logistic_wmle(y,x,c);
+//      }
+//      pi = boot.rowwise().mean();
+//      Dbeta = start - pi;
+//      beta = beta0 + Dbeta;
+//      
+//      // Check convergence
+//      double relE = std::sqrt(Dbeta.squaredNorm() / std::max(1e-20, start.squaredNorm()));
+//      ++it;
+//      
+//      if(verbose) {
+//        Rcpp::Rcout << "Relative error " << relE << " at iteration " << it << std::endl;
+//      }
+//      beta0 = beta;
+//      
+//      if(relE <= tol){
+//        break;
+//      }
+//    }
+//    
+//    return Rcpp::List::create(
+//      Rcpp::Named("coefficients") = beta0,
+//      Rcpp::Named("maxit") = it,
+//      Rcpp::Named("diff") = Dbeta
+//    );
+//  }
 
 
-//' Stochastic approximation for robust logistic regression with inconsistent initial estimator with Tukey's weights
-//'
-//' @param x a n x p matrix of design
-//' @param start an inconsistent estimator (also used as starting values)
-//' @param c tuning parameter for Tukey's weight (default value is 4.685061)
-//' @param H number of estimators for Monte Carlo approximation
-//' @param maxit max number of iteration for IRWLS
-//' @param tol tolerance for stopping criterion
-//' @param verbose print info
-//' @param seed for random number generator
-//' @export
-// [[Rcpp::export]]
-Rcpp::List logistic_wmle_stocapp(
-     Eigen::MatrixXd& x,
-     Eigen::VectorXd& start,
-     double c = 4.685061,
-     unsigned int maxit=10000,
-     double tol=1e-5,
-     bool verbose=false,
-     unsigned int seed=321
- ){
-   unsigned int p = x.cols();
-   unsigned int p1 = p+1;
-   
-   // data storage
-   Eigen::VectorXd Dinit(p1),Dbeta(p1),beta(p1),beta0(p1),boot(p1);
-   
-   // Stochastic approximation
-   beta0 = start;
-   unsigned int it = 0;
-   while(it < maxit){
-     unsigned int se = seed + it;
-     Eigen::ArrayXd y = r_logistic(beta0,x,se);
-     boot = logistic_wmle(y,x,c);
-     Dinit = start - boot;
-     double alpha = 1.0 / (it + 1.0);
-     beta = beta0 + alpha * Dinit;
-     
-     // Check convergence
-     Dbeta = beta - beta0;
-     double relE = std::sqrt(Dbeta.squaredNorm() / std::max(1e-20, start.squaredNorm()));
-     ++it;
-     
-     if(verbose) {
-       Rcpp::Rcout << "Relative error " << relE << " at iteration " << it << std::endl;
-     }
-     beta0 = beta;
-     
-     if(relE <= tol){
-       break;
-     }
-   }
-   
-   return Rcpp::List::create(
-     Rcpp::Named("coefficients") = beta0,
-     Rcpp::Named("maxit") = it,
-     Rcpp::Named("diff") = Dbeta
-   );
- }
+// //' Stochastic approximation for robust logistic regression with inconsistent initial estimator with Tukey's weights
+// //'
+// //' @param x a n x p matrix of design
+// //' @param start an inconsistent estimator (also used as starting values)
+// //' @param c tuning parameter for Tukey's weight (default value is 4.685061)
+// //' @param H number of estimators for Monte Carlo approximation
+// //' @param maxit max number of iteration for IRWLS
+// //' @param tol tolerance for stopping criterion
+// //' @param verbose print info
+// //' @param seed for random number generator
+// //' @export
+// // [[Rcpp::export]]
+// Rcpp::List logistic_wmle_stocapp(
+//      Eigen::MatrixXd& x,
+//      Eigen::VectorXd& start,
+//      double c = 4.685061,
+//      unsigned int maxit=10000,
+//      double tol=1e-5,
+//      bool verbose=false,
+//      unsigned int seed=321
+//  ){
+//    unsigned int p = x.cols();
+//    unsigned int p1 = p+1;
+//    
+//    // data storage
+//    Eigen::VectorXd Dinit(p1),Dbeta(p1),beta(p1),beta0(p1),boot(p1);
+//    
+//    // Stochastic approximation
+//    beta0 = start;
+//    unsigned int it = 0;
+//    while(it < maxit){
+//      unsigned int se = seed + it;
+//      Eigen::ArrayXd y = r_logistic(beta0,x,se);
+//      boot = logistic_wmle(y,x,c);
+//      Dinit = start - boot;
+//      double alpha = 1.0 / (it + 1.0);
+//      beta = beta0 + alpha * Dinit;
+//      
+//      // Check convergence
+//      Dbeta = beta - beta0;
+//      double relE = std::sqrt(Dbeta.squaredNorm() / std::max(1e-20, start.squaredNorm()));
+//      ++it;
+//      
+//      if(verbose) {
+//        Rcpp::Rcout << "Relative error " << relE << " at iteration " << it << std::endl;
+//      }
+//      beta0 = beta;
+//      
+//      if(relE <= tol){
+//        break;
+//      }
+//    }
+//    
+//    return Rcpp::List::create(
+//      Rcpp::Named("coefficients") = beta0,
+//      Rcpp::Named("maxit") = it,
+//      Rcpp::Named("diff") = Dbeta
+//    );
+//  }
 
 // OLD ATTEMPTS:
 
