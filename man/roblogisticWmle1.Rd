@@ -10,6 +10,7 @@ roblogisticWmle1(
   start,
   c = 4.685061,
   maxit = 200L,
+  eps = 0.01,
   tol = 1e-07,
   verbose = FALSE
 )
@@ -22,6 +23,8 @@ roblogisticWmle1(
 \item{c}{tuning parameter for Tukey's weight (default value is 4.685061)}
 
 \item{maxit}{max number of iteration for IRWLS}
+
+\item{eps}{max number of iteration for IRWLS}
 
 \item{tol}{tolerance for stopping criterion}
 

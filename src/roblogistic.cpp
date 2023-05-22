@@ -784,6 +784,7 @@ Rcpp::List roblogisticMqleVar(
 //' @param beta a p-vector of parameter (starting values)
 //' @param c tuning parameter for Tukey's weight (default value is 4.685061)
 //' @param maxit max number of iteration for IRWLS
+//' @param eps max number of iteration for IRWLS
 //' @param tol tolerance for stopping criterion
 //' @param verbose print info
 //' @export
@@ -794,6 +795,7 @@ Rcpp::List roblogisticWmle1(
      Eigen::VectorXd& start,
      double c = 4.685061,
      unsigned int maxit=200,
+     double eps = 1e-2,
      double tol=1e-7,
      bool verbose=false
 ){
@@ -803,7 +805,7 @@ Rcpp::List roblogisticWmle1(
    unsigned int conv = 1;
    
    // data storage
-   Eigen::VectorXd mu(n),eta(n),z(n);
+   Eigen::VectorXd mu(n),eta(n),z(n),y_tilde(n);
    Eigen::MatrixXd x1(n,p+1);
    Eigen::MatrixXd w = Eigen::MatrixXd::Zero(n,n);
    double varmu, xp, s;
@@ -813,6 +815,10 @@ Rcpp::List roblogisticWmle1(
    // pre-computation
    x1.rightCols(p) = x;
    x1.col(0) = Eigen::VectorXd::Constant(n,1.0);
+   for(unsigned int i=0;i<n;++i){
+     y_tilde(i) = eps;
+     if(y(i) == 1.0){y_tilde(i) = 1.0 - eps;}
+   }
    
    // Fisher scoring
    unsigned int it = 0;
@@ -823,9 +829,9 @@ Rcpp::List roblogisticWmle1(
      for(unsigned int j=0;j<n;++j){
        varmu = V(mu(j));
        xp = x1.row(j).norm(); // l2-norm
-       s = std::abs(y(j) - mu(j)) * xp; 
+       s = std::abs(y_tilde(j) - mu(j)) * xp; 
        w(j,j) = varmu * Ew(mu(j), c, xp) - varmu * Edwymu(mu(j), c, xp) * xp;
-       z(j) = (y(j) - mu(j)) * wc(s, c); 
+       z(j) = (y_tilde(j) - mu(j)) * wc(s, c); 
      }
      
      // Fisher scoring
