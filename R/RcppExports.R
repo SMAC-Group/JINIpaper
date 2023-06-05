@@ -132,12 +132,11 @@ roblogisticMqleVar <- function(x, start, c = 4.685061) {
 #' @param beta a p-vector of parameter (starting values)
 #' @param c tuning parameter for Tukey's weight (default value is 4.685061)
 #' @param maxit max number of iteration for IRWLS
-#' @param eps max number of iteration for IRWLS
 #' @param tol tolerance for stopping criterion
 #' @param verbose print info
 #' @export
-roblogisticWmle1 <- function(y, x, start, c = 4.685061, maxit = 200L, eps = 1e-2, tol = 1e-7, verbose = FALSE) {
-    .Call('_JINIpaper_roblogisticWmle1', PACKAGE = 'JINIpaper', y, x, start, c, maxit, eps, tol, verbose)
+roblogisticWmle1 <- function(y, x, start, c = 4.685061, maxit = 200L, tol = 1e-7, verbose = FALSE) {
+    .Call('_JINIpaper_roblogisticWmle1', PACKAGE = 'JINIpaper', y, x, start, c, maxit, tol, verbose)
 }
 
 #' Robust logistic regression estimator with Tukey's weights

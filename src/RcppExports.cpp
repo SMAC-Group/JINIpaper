@@ -165,8 +165,8 @@ BEGIN_RCPP
 END_RCPP
 }
 // roblogisticWmle1
-Rcpp::List roblogisticWmle1(Eigen::ArrayXd& y, Eigen::MatrixXd& x, Eigen::VectorXd& start, double c, unsigned int maxit, double eps, double tol, bool verbose);
-RcppExport SEXP _JINIpaper_roblogisticWmle1(SEXP ySEXP, SEXP xSEXP, SEXP startSEXP, SEXP cSEXP, SEXP maxitSEXP, SEXP epsSEXP, SEXP tolSEXP, SEXP verboseSEXP) {
+Rcpp::List roblogisticWmle1(Eigen::ArrayXd& y, Eigen::MatrixXd& x, Eigen::VectorXd& start, double c, unsigned int maxit, double tol, bool verbose);
+RcppExport SEXP _JINIpaper_roblogisticWmle1(SEXP ySEXP, SEXP xSEXP, SEXP startSEXP, SEXP cSEXP, SEXP maxitSEXP, SEXP tolSEXP, SEXP verboseSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -175,10 +175,9 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< Eigen::VectorXd& >::type start(startSEXP);
     Rcpp::traits::input_parameter< double >::type c(cSEXP);
     Rcpp::traits::input_parameter< unsigned int >::type maxit(maxitSEXP);
-    Rcpp::traits::input_parameter< double >::type eps(epsSEXP);
     Rcpp::traits::input_parameter< double >::type tol(tolSEXP);
     Rcpp::traits::input_parameter< bool >::type verbose(verboseSEXP);
-    rcpp_result_gen = Rcpp::wrap(roblogisticWmle1(y, x, start, c, maxit, eps, tol, verbose));
+    rcpp_result_gen = Rcpp::wrap(roblogisticWmle1(y, x, start, c, maxit, tol, verbose));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -286,7 +285,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_JINIpaper_roblogisticMqle1", (DL_FUNC) &_JINIpaper_roblogisticMqle1, 7},
     {"_JINIpaper_roblogisticMqle", (DL_FUNC) &_JINIpaper_roblogisticMqle, 7},
     {"_JINIpaper_roblogisticMqleVar", (DL_FUNC) &_JINIpaper_roblogisticMqleVar, 3},
-    {"_JINIpaper_roblogisticWmle1", (DL_FUNC) &_JINIpaper_roblogisticWmle1, 8},
+    {"_JINIpaper_roblogisticWmle1", (DL_FUNC) &_JINIpaper_roblogisticWmle1, 7},
     {"_JINIpaper_roblogisticWmle", (DL_FUNC) &_JINIpaper_roblogisticWmle, 7},
     {"_JINIpaper_roblogisticWmleVar", (DL_FUNC) &_JINIpaper_roblogisticWmleVar, 3},
     {"_JINIpaper_r_logistic", (DL_FUNC) &_JINIpaper_r_logistic, 3},
