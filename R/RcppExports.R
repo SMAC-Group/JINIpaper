@@ -203,7 +203,7 @@ StocApproblogisticWmle1 <- function(x, start, c = 4.685061, maxit = 10000L, tol 
     .Call('_JINIpaper_StocApproblogisticWmle1', PACKAGE = 'JINIpaper', x, start, c, maxit, tol, verbose, seed, k)
 }
 
-#' MLE for logistic regression with misclassified responses
+#' WMLE for logistic regression
 #'
 #' @param y a vector of responses
 #' @param x a n x p matrix of design
@@ -211,5 +211,15 @@ StocApproblogisticWmle1 <- function(x, start, c = 4.685061, maxit = 10000L, tol 
 #' @export
 logistic_wmle <- function(y, x, c) {
     .Call('_JINIpaper_logistic_wmle', PACKAGE = 'JINIpaper', y, x, c)
+}
+
+#' MQLE for logistic regression
+#'
+#' @param y a vector of responses
+#' @param x a n x p matrix of design
+#' @param c tuning parameter for Tukey's weight (default value is 4.685061)
+#' @export
+logistic_mqle <- function(y, x, c) {
+    .Call('_JINIpaper_logistic_mqle', PACKAGE = 'JINIpaper', y, x, c)
 }
 

@@ -273,6 +273,19 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// logistic_mqle
+Rcpp::List logistic_mqle(Eigen::ArrayXd& y, Eigen::MatrixXd& x, double c);
+RcppExport SEXP _JINIpaper_logistic_mqle(SEXP ySEXP, SEXP xSEXP, SEXP cSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< Eigen::ArrayXd& >::type y(ySEXP);
+    Rcpp::traits::input_parameter< Eigen::MatrixXd& >::type x(xSEXP);
+    Rcpp::traits::input_parameter< double >::type c(cSEXP);
+    rcpp_result_gen = Rcpp::wrap(logistic_mqle(y, x, c));
+    return rcpp_result_gen;
+END_RCPP
+}
 
 static const R_CallMethodDef CallEntries[] = {
     {"_JINIpaper_em", (DL_FUNC) &_JINIpaper_em, 6},
@@ -292,6 +305,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_JINIpaper_IBroblogisticWmle1", (DL_FUNC) &_JINIpaper_IBroblogisticWmle1, 8},
     {"_JINIpaper_StocApproblogisticWmle1", (DL_FUNC) &_JINIpaper_StocApproblogisticWmle1, 8},
     {"_JINIpaper_logistic_wmle", (DL_FUNC) &_JINIpaper_logistic_wmle, 3},
+    {"_JINIpaper_logistic_mqle", (DL_FUNC) &_JINIpaper_logistic_mqle, 3},
     {NULL, NULL, 0}
 };
 

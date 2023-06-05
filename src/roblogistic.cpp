@@ -1304,7 +1304,7 @@ double wmle_logistic::f_grad(
   return f;
 }
 
-//' MLE for logistic regression with misclassified responses
+//' WMLE for logistic regression
 //'
 //' @param y a vector of responses
 //' @param x a n x p matrix of design
@@ -1349,6 +1349,94 @@ Rcpp::List check(
     Rcpp::Named("grad") = grad
   );
 }
+
+// --------------
+// Mqle (using lbfgs and Fisher scoring)
+// --------------
+class mqle_logistic: public Numer::MFuncGrad
+{
+private:
+  const Eigen::ArrayXd y;
+  const Eigen::MatrixXd x;
+  const double c;
+  const unsigned int n = y.size();
+  const unsigned int p = x.cols();
+  
+public:
+  mqle_logistic(const Eigen::ArrayXd& y_,const Eigen::MatrixXd& x_, const double& c_) :
+  y(y_), x(x_), c(c_) {}
+  double f_grad(Numer::Constvec& beta, Numer::Refvec grad);
+};
+
+double mqle_logistic::f_grad(
+    Numer::Constvec& beta,
+    Numer::Refvec grad
+){
+  // data storage
+  Eigen::ArrayXd sig(n);
+  Eigen::VectorXd eta(n), mu(n), z(n);
+  Eigen::MatrixXd x1(n,p+1);
+  Eigen::VectorXd Psi(p+1);
+  Eigen::MatrixXd DPsi(p+1,p+1);
+  Eigen::MatrixXd w = Eigen::MatrixXd::Zero(n,n);
+  double varmu, varmup, v12, r;
+  
+  // pre-computation
+  x1.rightCols(p) = x;
+  x1.col(0) = Eigen::VectorXd::Constant(n,1.0);
+  eta = x1 * beta;
+  mu = eta.unaryExpr(Sigmoid());
+  
+  // Compute of and grad
+  for(unsigned int j=0;j<n;++j){
+    varmu = V(mu(j));
+    v12 = std::sqrt(varmu);
+    varmup = V1(mu(j));
+    r = y(j) / v12 - mu(j) / v12; // Pearson's residual
+    w(j,j) = varmu * Edpsi(mu(j),c) + v12 * varmup * Edpsir(mu(j),c) / 0.2e1 + v12 * varmu* dEpsi(mu(j),c);
+    z(j) = v12 * psi(r,c); 
+  }
+  
+  Psi = x1.transpose() * z;
+  DPsi = -x1.transpose() * w * x1;
+  
+  // objective function
+  const double f = Psi.squaredNorm() / 0.2e1 / n;
+  
+  // gradient
+  grad = DPsi.transpose() * Psi / n;
+  
+  return f;
+}
+
+//' MQLE for logistic regression
+//'
+//' @param y a vector of responses
+//' @param x a n x p matrix of design
+//' @param c tuning parameter for Tukey's weight (default value is 4.685061)
+//' @export
+// [[Rcpp::export]]
+Rcpp::List logistic_mqle(
+     Eigen::ArrayXd& y,
+     Eigen::MatrixXd& x,
+     double c
+ ){
+   // Regress
+   unsigned int p = x.cols() + 1;
+   double fopt;
+   Eigen::VectorXd beta(p);
+   beta.setZero();
+   double prop = y.mean();
+   beta(0) = std::log(prop) - std::log(1.0 - prop);
+   mqle_logistic f(y,x,c);
+   int res = Numer::optim_lbfgs(f,beta,fopt);
+   
+   return Rcpp::List::create(
+     Rcpp::Named("coefficients") = beta,
+     Rcpp::Named("fopt") = fopt,
+     Rcpp::Named("status") = res
+   );
+ }
 
 // //' Iterative bootstrap for robust logistic regression with inconsistent initial estimator with Tukey's weights
 // //'
