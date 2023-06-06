@@ -4,7 +4,7 @@
 \alias{logistic_mqle}
 \title{MQLE for logistic regression}
 \usage{
-logistic_mqle(y, x, c)
+logistic_mqle(y, x, c = 4.685061)
 }
 \arguments{
 \item{y}{a vector of responses}

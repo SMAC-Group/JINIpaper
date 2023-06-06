@@ -209,7 +209,7 @@ StocApproblogisticWmle1 <- function(x, start, c = 4.685061, maxit = 10000L, tol 
 #' @param x a n x p matrix of design
 #' @param c tuning parameter for Tukey's weight (default value is 4.685061)
 #' @export
-logistic_wmle <- function(y, x, c) {
+logistic_wmle <- function(y, x, c = 4.685061) {
     .Call('_JINIpaper_logistic_wmle', PACKAGE = 'JINIpaper', y, x, c)
 }
 
@@ -219,7 +219,7 @@ logistic_wmle <- function(y, x, c) {
 #' @param x a n x p matrix of design
 #' @param c tuning parameter for Tukey's weight (default value is 4.685061)
 #' @export
-logistic_mqle <- function(y, x, c) {
+logistic_mqle <- function(y, x, c = 4.685061) {
     .Call('_JINIpaper_logistic_mqle', PACKAGE = 'JINIpaper', y, x, c)
 }
 

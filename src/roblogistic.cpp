@@ -1314,7 +1314,7 @@ double wmle_logistic::f_grad(
 Rcpp::List logistic_wmle(
      Eigen::ArrayXd& y,
      Eigen::MatrixXd& x,
-     double c
+     double c = 4.685061
  ){
    // Regress
    unsigned int p = x.cols() + 1;
@@ -1419,7 +1419,7 @@ double mqle_logistic::f_grad(
 Rcpp::List logistic_mqle(
      Eigen::ArrayXd& y,
      Eigen::MatrixXd& x,
-     double c
+     double c = 4.685061
  ){
    // Regress
    unsigned int p = x.cols() + 1;

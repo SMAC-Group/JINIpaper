@@ -4,7 +4,7 @@
 \alias{logistic_wmle}
 \title{WMLE for logistic regression}
 \usage{
-logistic_wmle(y, x, c)
+logistic_wmle(y, x, c = 4.685061)
 }
 \arguments{
 \item{y}{a vector of responses}
