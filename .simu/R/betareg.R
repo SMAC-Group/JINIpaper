@@ -6,19 +6,20 @@
 
 ## packages
 library(IBpaper)
+library(JINIpaper)
 library(ib)
 library(betareg)
 
 ## simulation specifics
 MC <- 1000 # number of simulations
-n <- 2000 # sample size
-p <- 300 # number of coefficients
+n <- 200 # sample size
+p <- 30 # number of coefficients
 # Non-zero coefficients:
 # intercept is -0.5
 beta_nz <- c(-.5,rep(1,5),rep(-1.5,5),rep(2,5))
 # Coefficients:
-beta <- c(beta_nz,rep(0,p-15))
-gamma <- 5 # precision parameter
+beta <- c(beta_nz,rep(c(-.1,.1),p-15)[1:(p-15)])
+gamma <- log(5) # precision parameter
 theta <- c(beta,gamma)
 
 # seeds for random number generator
@@ -45,7 +46,7 @@ res <- list(mle = matrix(ncol=p+2,nrow=MC),
 for(m in 1:MC){
   ##------- simulate the process ---------
   set.seed(seed$process[m]) # set the seed
-  x <- matrix(rnorm(n*p, sd = p^(-.5)), nrow = n) # simulate the design
+  x <- matrix(rnorm(n*p, sd = 4/sqrt(n)), nrow = n) # simulate the design
   betareg_object <- make_betareg(x, theta) # see ?make_betareg
   # simulate beta responses
   y <- simulation(betareg_object, 
