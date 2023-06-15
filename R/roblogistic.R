@@ -93,6 +93,10 @@ roblogisticWmle1_ib <- function(x, thetastart, c = 4.685061, H = 200, maxit=200,
     # test diff between thetas
     test_theta <- sum(delta^2)
     if(k>0) differences[k] <- test_theta
+    if(!is.finite(test_theta)) {
+      warning("non-finite difference")
+      break
+    }
     
     # initialize test
     if(!k) tt_old <- test_theta+1
