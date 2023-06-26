@@ -91,9 +91,9 @@ for(m in na.omit(ind[id_slurm,])){
   ##------ EM estimation (consistent) ----------------
   if(!any(is.na(res$consistent[m,]))){
 	boot <- matrix(ncol=p+2, nrow=B)
-	beta <- res$consistent[m,]
-	beta[p+2] <- log(beta[p+2])
-  	betareg_object <- make_betareg(x, beta)
+	beta0 <- res$consistent[m,]
+	beta0[p+2] <- log(beta0[p+2])
+  	betareg_object <- make_betareg(x, beta0)
 	t1 <- Sys.time()
 	for(b in 1:B) {
   		y <- simulation(betareg_object, control = list(sim=rounding, seed=seed$process[m]+b))
@@ -117,18 +117,19 @@ for(m in na.omit(ind[id_slurm,])){
   ##------ IB bias correction ------------
   if(!any(is.na(res$jimi[m,]))){
 	boot <- matrix(ncol=p+2, nrow=B)
-	beta <- res$jimi[m,]
-	beta[p+2] <- log(beta[p+2])
-  	betareg_object <- make_betareg(x, beta)
-	t1 <- Sys.time()
+	beta0 <- res$jimi[m,]
+	beta0[p+2] <- log(beta0[p+2])
+  betareg_object <- make_betareg(x, beta0)
+  sv <- res$jimi[m,]
+  t1 <- Sys.time()
 	for(b in 1:B) {
   		y <- simulation(betareg_object, control = list(sim=rounding, seed=seed$process[m]+b))
   		fit_mle <- NULL
-		try(fit_mle <- betareg(y ~ x), silent=T)
+		  try(fit_mle <- betareg(y ~ x), silent=T)
   		if(is.null(fit_mle)) next
   		jimi_control$seed <- seed$sc[m]+b
   		fit_jimi <- NULL
-		try(fit_jimi <- ib(fit_mle, control = jimi_control),silent=T)
+		  try(fit_jimi <- ib(fit_mle, control = jimi_control, thetastart = sv),silent=T)
   		if(is.null(fit_jimi)) next
   		boot[b,] <- getEst(fit_jimi)
 	}

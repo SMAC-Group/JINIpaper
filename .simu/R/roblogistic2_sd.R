@@ -2,7 +2,6 @@
 # Simulations
 # -----------
 # general setting
-readRenviron(".simu/R/setting.sh")
 
 # packages
 library(JINIpaper)
@@ -35,7 +34,7 @@ seed$sc <- sample.int(1e7,MC)
 seed$boot <- sample.int(1e7,MC)
 
 ##------------------ Regular logistic --------
-load(paste0(".simu/data/",model,"_setting_",setting,".rds"))
+load(paste0("data/",model,"_setting_",setting,".rds"))
 mle_sd <- matrix(ncol=p+1,nrow=MC)
 br_sd <- matrix(ncol=p+1,nrow=MC)
 jimi_sd <- matrix(ncol=p+1,nrow=MC)
@@ -50,11 +49,6 @@ n_array <- as.integer(Sys.getenv("N_ARRAY"))
 ind <- matrix(seq_len(MC),nr=n_array,byr=T)
 id_slurm <- Sys.getenv("SLURM_ARRAY_TASK_ID")
 
-load(".simu/data/roblogistic_2_sd_setting_1.rds")
-which(is.na(res$mle_sd[,1]))
-which(is.na(res$mle[,1]))
-m <- 47
-
 for(m in na.omit(ind[as.numeric(id_slurm),])){
  ##------- simulate the process ---------
   # set the seed
@@ -65,11 +59,13 @@ for(m in na.omit(ind[as.numeric(id_slurm),])){
   ##------ MLE estimation ----------------
   if(!any(is.na(res$mle[m,]))){
 	boot <- matrix(ncol=p+1, nrow=B)
+	logistic_object <- make_logistic(x, res$mle[m,], robust=TRUE)
 	t1 <- Sys.time()
 	for(b in 1:B) {
-		logistic_object <- make_logistic(x, res$mle[m,], robust=TRUE)
 		y <- simulation(logistic_object, control = list(seed=seed$boot[m]+b))
-		fit_mle <- glm(y ~ x, family=binomial(link="logit"), control = glm.control(maxit=200))
+		fit_mle <- NULL
+		try(fit_mle <- glm(y ~ x, family=binomial(link="logit"), control = glm.control(maxit=200)), silent=T)
+		if(is.null(fit_mle)) next
   		boot[b,] <- coef(fit_mle)
 	}
   	t2 <- Sys.time()
@@ -81,11 +77,13 @@ for(m in na.omit(ind[as.numeric(id_slurm),])){
   ##------ "brglm" bias reduction --------
   if(!any(is.na(res$br[m,]))){
 	boot <- matrix(ncol=p+1, nrow=B)
+	logistic_object <- make_logistic(x, res$br[m,], robust=TRUE)
 	t1 <- Sys.time()
 	for(b in 1:B) {
-		logistic_object <- make_logistic(x, res$br[m,], robust=TRUE)
 		y <- simulation(logistic_object, control = list(seed=seed$boot[m]+b))
-  		fit_br <- brglm(y~x, family=binomial(link="logit"), control.glm = glm.control1(maxit=200))
+		fit_br <- NULL
+  		try(fit_br <- brglm(y~x, family=binomial(link="logit"), control.glm = glm.control1(maxit=200)), silent=T)
+		if(is.null(fit_br)) next
   		boot[b,] <- coef(fit_br)
 	}
   	t2 <- Sys.time()
@@ -97,9 +95,9 @@ for(m in na.omit(ind[as.numeric(id_slurm),])){
   ##------ Robust estimator (Cantoni-Ronchetti) ----------------
   if(!any(is.na(res$robCR[m,]))){
 	boot <- matrix(ncol=p+1, nrow=B)
+	logistic_object <- make_logistic(x, res$robCR[m,], robust=TRUE)
 	t1 <- Sys.time()
 	for(b in 1:B) {
-		logistic_object <- make_logistic(x, res$robCR[m,], robust=TRUE)
 		y <- simulation(logistic_object, control = list(seed=seed$boot[m]+b))
   		fit_robCR <- NULL
 		try(fit_robCR <- glmrob(y ~ x, family=binomial(link="logit"), control = glmrobMqle.control(maxit=200), method = "Mqle"), silent=TRUE)
@@ -114,9 +112,9 @@ for(m in na.omit(ind[as.numeric(id_slurm),])){
   ##------ Robust estimator (Branco-Yohai) ----------------
    if(!any(is.na(res$robBY[m,]))){
 	boot <- matrix(ncol=p+1, nrow=B)
+	logistic_object <- make_logistic(x, res$robBY[m,], robust=TRUE)
 	t1 <- Sys.time()
 	for(b in 1:B) {
-		logistic_object <- make_logistic(x, res$robBY[m,], robust=TRUE)
 		y <- simulation(logistic_object, control = list(seed=seed$boot[m]+b))
   		try(fit_robBY <- glmrob(y ~ x, family=binomial(link="logit"), control = glmrobBY.control(maxit=200), method = "BY"), silent=TRUE)
   		if(!is.null(fit_robBY)) boot[b,] <- coef(fit_robBY)
@@ -130,11 +128,16 @@ for(m in na.omit(ind[as.numeric(id_slurm),])){
   ##------ Consistent WMLE (Tukey's weights) ----------------
   if(!any(is.na(res$consistent[m,]))){
 	boot <- matrix(ncol=p+1, nrow=B)
+	logistic_object <- make_logistic(x, res$consistent[m,], robust=TRUE)
 	t1 <- Sys.time()
 	for(b in 1:B) {
-		logistic_object <- make_logistic(x, res$consistent[m,], robust=TRUE)
 		y <- simulation(logistic_object, control = list(seed=seed$boot[m]+b))
-  		fit_consistent <- roblogisticWmle(y, x, start = res$consistent[m,], c = cc) 
+		fit_mle <- NULL
+		try(fit_mle <- glm(y ~ x, family=binomial(link="logit"), control = glm.control(maxit=200)), silent=T)
+		if(is.null(fit_mle)) next
+		fit_consistent <- NULL
+		try(fit_consistent <- roblogisticWmle(y, x, start = coef(fit_mle), c = cc), silent=T)
+		if(is.null(fit_consistent)) NULL
   		boot[b,] <- fit_consistent$coefficients
 	}
   	t2 <- Sys.time()
@@ -146,12 +149,19 @@ for(m in na.omit(ind[as.numeric(id_slurm),])){
   ##------ Iterative bootstrap bias correction ------------
   if(!any(is.na(res$jimi[m,]))){
 	boot <- matrix(ncol=p+1, nrow=B)
+	logistic_object <- make_logistic(x, res$jimi[m,], robust=TRUE)
 	t1 <- Sys.time()
 	for(b in 1:B) {
-		logistic_object <- make_logistic(x, res$jimi[m,], robust=TRUE)
 		y <- simulation(logistic_object, control = list(seed=seed$boot[m]+b))
-  		fit_initial <- roblogisticWmle1(y, x, start = coef(fit_mle), c = cc) 
-  		fit_jimi <- roblogisticWmle1_ib(x, thetastart=fit_initial$coefficients, c=cc, seed=seed$sc[m])
+		fit_mle <- NULL
+		try(fit_mle <- glm(y ~ x, family=binomial(link="logit"), control = glm.control(maxit=200)), silent=T)
+		if(is.null(fit_mle)) next
+		fit_initial <- NULL
+		try(fit_initial <- roblogisticWmle1(y, x, start = coef(fit_mle), c = cc), silent=T)
+		if(is.null(fit_initial)) next
+		fit_jimi <- NULL
+  		try(fit_jimi <- roblogisticWmle1_ib(x, thetastart=fit_initial$coefficients, c=cc, seed=seed$sc[m]), silent=T)
+		if(is.null(fit_jimi)) next
   		boot[b,] <- fit_jimi$estimate
 	}
   	t2 <- Sys.time()

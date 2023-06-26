@@ -5,7 +5,7 @@
 #' school recordings (e.g. grades, number of school absences) and
 #' self-reporting questionnaires (e.g. workday and weekend alcohol consumptions,
 #' parents' jobs, quality of family relationships, frequency to go out with friends).
-#' It was originally collected and first studied in \insertCite{cortez2008using;textual}{IBpaper}.
+#' It was originally collected and first studied in \insertCite{cortez2008using;textual}{JINIpaper}.
 #'
 #' @format A data frame with 395 observations and 45 variables:
 #' \describe{

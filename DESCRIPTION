@@ -22,7 +22,6 @@ Imports:
     MASS,
     Rcpp,
     Rdpack (>= 0.7),
-    glmrob2,
     stats,
     utils
 Suggests:
@@ -32,8 +31,6 @@ Suggests:
     methods,
     rmarkdown,
     RcppNumerical
-Remotes:
-    SMAC-Group/glmrob2
 License: GPL (>= 2) 
 Encoding: UTF-8
 LazyData: true

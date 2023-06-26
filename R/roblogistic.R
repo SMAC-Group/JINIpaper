@@ -7,9 +7,8 @@
 #' @param beta parameter
 #' @param c_min minimum tuning parameter value
 #' @param c_max maximum tuning parameter value
-#' @param eff level of efficiency (95% by default)
+#' @param eff level of efficiency (95\% by default)
 #' @param inconsistent efficiency at the inconsistent estimator?
-#' @export
 find_tuning_constantMqle <- function(x, beta, c_min, c_max, eff=0.95, inconsistent=FALSE){
   if(inconsistent) {
     of <- function(c, x, beta, eff) abs(roblogisticMqleVar(x, beta, c)$efficiency1 - eff) 
@@ -29,7 +28,7 @@ find_tuning_constantMqle <- function(x, beta, c_min, c_max, eff=0.95, inconsiste
 #' @param beta parameter
 #' @param c_min minimum tuning parameter value
 #' @param c_max maximum tuning parameter value
-#' @param eff level of efficiency (95% by default)
+#' @param eff level of efficiency (95\% by default)
 #' @param inconsistent efficiency at the inconsistent estimator?
 #' @export
 find_tuning_constantWmle <- function(x, beta, c_min, c_max, eff=0.95, inconsistent=FALSE){
@@ -151,7 +150,6 @@ roblogisticWmle1_ib <- function(x, thetastart, c = 4.685061, H = 200, maxit=200,
 #' @param tol tolerance for stopping criterion
 #' @param verbose print info
 #' @param seed for random number generator
-#' @export
 logistic_wmle_ib <- function(x, thetastart, c = 4.685061, H = 200, maxit=200, tol=1e-7, verbose=FALSE, seed=321){
   p <- length(thetastart)
   pi0 <- t0 <- thetastart
@@ -246,7 +244,6 @@ logistic_wmle_ib <- function(x, thetastart, c = 4.685061, H = 200, maxit=200, to
 #' @param tol tolerance for stopping criterion
 #' @param verbose print info
 #' @param seed for random number generator
-#' @export
 logistic_mqle_ib <- function(x, thetastart, c = 4.685061, H = 200, maxit=200, tol=1e-7, verbose=FALSE, seed=321){
   p <- length(thetastart)
   pi0 <- t0 <- thetastart
@@ -341,7 +338,6 @@ logistic_mqle_ib <- function(x, thetastart, c = 4.685061, H = 200, maxit=200, to
 #' @param tol tolerance for stopping criterion
 #' @param verbose print info
 #' @param seed for random number generator
-#' @export
 roblogisticWmle1_stocapp <- function(x, thetastart, c = 4.685061, maxit=1e4, tol=1e-7, verbose=FALSE, seed=321){
   p <- length(thetastart)
   pi0 <- t0 <- thetastart
@@ -415,7 +411,6 @@ roblogisticWmle1_stocapp <- function(x, thetastart, c = 4.685061, maxit=1e4, tol
 #' @param tol tolerance for stopping criterion
 #' @param verbose print info
 #' @param seed for random number generator
-#' @export
 roblogisticMqle1_ib <- function(x, thetastart, c = 4.685061, H = 200, maxit=200, tol=1e-7, verbose=FALSE, seed=321){
   p <- length(thetastart)
   pi0 <- t0 <- thetastart

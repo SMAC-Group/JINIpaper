@@ -5,8 +5,10 @@
 
 # packages
 library(JINIpaper)
-library(stocapp)
+library(ib)
 library(betareg)
+
+readRenviron(".simu/R/setting_betareg.sh")
 
 # simulation specifics
 MC <- as.integer(Sys.getenv("MC")) # number of simulations
@@ -16,7 +18,7 @@ model <- paste0(model0,"_1")
 ##------------------ Specific functions -------
 # Function to simulate responses with rounding
 rounding <- function(object, control, extra=NULL){
-  simulate_betareg <- getFromNamespace("simulate_betareg", ns = "stocapp")
+  simulate_betareg <- getFromNamespace("simulate_betareg", ns = "ib")
   y <- simulate_betareg(object, control$H)
   n <- length(y) / control$H
   y <- round(y,1)
@@ -44,7 +46,8 @@ seed$sc <- sample.int(1e7,MC)
 
 ##------------------ Rounding --------
 # control for IB
-jimi_control <- stocappControl(sim=rounding, constraint=FALSE, maxit=1e4)
+H <- as.integer(Sys.getenv("H"))
+jimi_control <- ibControl(sim=rounding, constraint=FALSE, maxit=1e2)
 
 res <- list(jimi = matrix(ncol=p+2,nrow=MC),
             initial = matrix(ncol=p+2,nrow=MC),
@@ -69,8 +72,8 @@ for(m in na.omit(ind[id_slurm,])){
   ##------ Initial (MLE) ----------------
   t1 <- Sys.time()
   fit_mle <- NULL
-  t2 <- Sys.time()
   try(fit_mle <- betareg(y ~ x), silent=T)
+  t2 <- Sys.time()
   if(is.null(fit_mle)) next
   res$initial[m,] <- coef(fit_mle)
   res$time[,"initial"][m] <- difftime(t2,t1,units="secs")
@@ -91,7 +94,7 @@ for(m in na.omit(ind[id_slurm,])){
   ##------ IB bias correction ------------
   jimi_control$seed <- seed$sc[m]
   t1 <- Sys.time()
-  fit_jimi <- stocapp(fit_mle, control = jimi_control)
+  fit_jimi <- ib(fit_mle, control = jimi_control)
   t2 <- Sys.time()
   res$jimi[m,] <- getEst(fit_jimi)
   res$time[,"jimi"][m] <- difftime(t2,t1,units="secs")

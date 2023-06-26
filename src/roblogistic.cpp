@@ -12,14 +12,14 @@ double g(double x){return std::log(x / (0.1e1 - x));}
 // double g2(double x){return (0.2e1 * x - 0.1e1) / (x*x - x*x*x*x);}
 double V(double x){return x - x * x;}
 double V1(double x){return 0.1e1 - 0.2e1 * x;}
+// Function for robust estimation
 // Tukey's weight:
 double psi(double x, double c){return (std::abs(x) <= c) ? x * (x*x/c/c-0.1e1) * (x*x/c/c-0.1e1) : 0.0;}
-double wc(double x, double c){return (std::abs(x) <= c) ? 0.1e1 - 0.2e1 * x*x/c/c + x*x*x*x/c/c/c/c : 0.0;}
-double wc1(double x, double c){return (std::abs(x) <= c) ? - 0.4e1 * x/c/c + 0.4e1 * x*x*x/c/c/c/c : 0.0;}
 double psi1(double x, double c){return (std::abs(x) <= c) ? 0.1e1 - 6*x*x/c/c + 5*x*x*x*x/c/c/c/c : 0.0;}
 // Hubers' weight:
 // double psi(double x, double c){return (std::abs(x) <= c) ? x : c;}
 // double psi1(double x, double c){return (std::abs(x) <= c) ? 0.1e1 : 0.0;}
+
 
 // Expectation of psi(r)
 double Epsi(double mu, double c){
@@ -286,7 +286,7 @@ double Ewymu(double mu, double c, double xp){
 // Note : xp stands for p-norm of vector x
 double dEwymu(double mu, double c, double xp){
   // data storage
-  double varmu, varmup, mu2, mu3, mu4, mu_, mu_2, mu_3, mu_4, xpc, xpc2, xpc4, t1(0.0), t2(0.0);
+  double varmu, varmup, mu2, mu3, mu4, mu_, mu_2, mu_4, xpc, xpc2, xpc4, t1(0.0), t2(0.0);
   bool is_below, is_above, is_zero;
   
   // computation
@@ -310,7 +310,6 @@ double dEwymu(double mu, double c, double xp){
   }
   if(is_above) {
     mu_2 = mu_ * mu_;
-    mu_3 = mu_2 * mu_;
     mu_4 = mu_2 * mu_2;
     t2 = varmup - 0.2e1 * xpc2 * (mu_2 * varmup - 0.2e1 * mu_ * varmu) + xpc4 * (mu_4 * varmup - 0.2e1 * mu_* varmu);
   }
@@ -556,7 +555,6 @@ double Ewymu2(double mu, double c, double xp){
 //' @param maxit max number of iteration for IRWLS
 //' @param tol tolerance for stopping criterion
 //' @param verbose print info
-//' @export
 // [[Rcpp::export]]
 Rcpp::List roblogisticMqle1(
      Eigen::ArrayXd& y,
@@ -643,7 +641,6 @@ Rcpp::List roblogisticMqle1(
 //' @param maxit max number of iteration for IRWLS
 //' @param tol tolerance for stopping criterion
 //' @param verbose print info
-//' @export
 // [[Rcpp::export]]
 Rcpp::List roblogisticMqle(
      Eigen::ArrayXd& y,
@@ -724,7 +721,6 @@ Rcpp::List roblogisticMqle(
 //' @param x a n x p matrix of design
 //' @param beta a p-vector of parameter (starting values)
 //' @param c tuning parameter for Tukey's weights (default value is 4.685061)
-//' @export
 // [[Rcpp::export]]
 Rcpp::List roblogisticMqleVar(
      Eigen::MatrixXd& x,
@@ -1124,7 +1120,6 @@ Eigen::ArrayXd r_logistic(
 //' @param tol tolerance for stopping criterion
 //' @param verbose print info
 //' @param seed for random number generator
-//' @export
 // [[Rcpp::export]]
 Rcpp::List IBroblogisticWmle1(
      Eigen::MatrixXd& x,
@@ -1189,7 +1184,6 @@ Rcpp::List IBroblogisticWmle1(
 //' @param verbose print info
 //' @param seed for random number generator
 //' @param k constant for stochastic approximation (1 by default)
-//' @export
 // [[Rcpp::export]]
 Rcpp::List StocApproblogisticWmle1(
      Eigen::MatrixXd& x,
@@ -1309,7 +1303,6 @@ double wmle_logistic::f_grad(
 //' @param y a vector of responses
 //' @param x a n x p matrix of design
 //' @param c tuning parameter for Tukey's weight (default value is 4.685061)
-//' @export
 // [[Rcpp::export]]
 Rcpp::List logistic_wmle(
      Eigen::ArrayXd& y,
@@ -1414,7 +1407,6 @@ double mqle_logistic::f_grad(
 //' @param y a vector of responses
 //' @param x a n x p matrix of design
 //' @param c tuning parameter for Tukey's weight (default value is 4.685061)
-//' @export
 // [[Rcpp::export]]
 Rcpp::List logistic_mqle(
      Eigen::ArrayXd& y,

@@ -50,4 +50,12 @@ struct Indicator {
   const double operator()(const double &t) const {return (t <= 0.5) ? 0.0 : 1.0;}
 };
 
+// Function for robust estimation
+// Tukey's weight:
+inline double wc(double x, double c){return (std::abs(x) <= c) ? 0.1e1 - 0.2e1 * x*x/c/c + x*x*x*x/c/c/c/c : 0.0;}
+inline double wc1(double x, double c){return (std::abs(x) <= c) ? - 0.4e1 * x/c/c + 0.4e1 * x*x*x/c/c/c/c : 0.0;}
+
+// User written headers
+// #include "misc.h"
+
 #endif

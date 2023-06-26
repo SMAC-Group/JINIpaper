@@ -22,7 +22,7 @@ find_tuning_constantWmle(
 
 \item{c_max}{maximum tuning parameter value}
 
-\item{eff}{level of efficiency (95% by default)}
+\item{eff}{level of efficiency (95\% by default)}
 
 \item{inconsistent}{efficiency at the inconsistent estimator?}
 }

@@ -87,7 +87,20 @@ logLike_negbin <- function(beta, alpha, y, x, lambda) {
     .Call('_JINIpaper_logLike_negbin', PACKAGE = 'JINIpaper', beta, alpha, y, x, lambda)
 }
 
-#' Robust logistic regression initial (inconsistent) estimator with Tukey's weights
+#' Pareto regression (MLE)
+#'
+#' @param y a vector of responses
+#' @param x a n x p matrix of design
+#' @param start is a p-vector of parameters (starting values)
+#' @param maxit max number of iteration for IRWLS
+#' @param tol tolerance for stopping criterion
+#' @param verbose print info
+#' @export
+paretoMle <- function(y, x, start, maxit = 200L, tol = 1e-7, verbose = FALSE) {
+    .Call('_JINIpaper_paretoMle', PACKAGE = 'JINIpaper', y, x, start, maxit, tol, verbose)
+}
+
+#' Robust logistic regression initial estimator (inconsistent) with Tukey's weights
 #'
 #' @param y a vector of responses
 #' @param x a n x p matrix of design
@@ -97,6 +110,30 @@ logLike_negbin <- function(beta, alpha, y, x, lambda) {
 #' @param tol tolerance for stopping criterion
 #' @param verbose print info
 #' @export
+paretoWmle1 <- function(y, x, start, c = 4.685061, maxit = 200L, tol = 1e-7, verbose = FALSE) {
+    .Call('_JINIpaper_paretoWmle1', PACKAGE = 'JINIpaper', y, x, start, c, maxit, tol, verbose)
+}
+
+#' Simulation of Pareto regression
+#'
+#' @param x a n x p matrix of design
+#' @param beta a p-vector of parameter (starting values)
+#' @param k minimum
+#' @param seed for random number generator
+#' @export
+r_pareto <- function(beta, k, x, seed) {
+    .Call('_JINIpaper_r_pareto', PACKAGE = 'JINIpaper', beta, k, x, seed)
+}
+
+#' Robust logistic regression initial (inconsistent) estimator with Tukey's weights
+#'
+#' @param y a vector of responses
+#' @param x a n x p matrix of design
+#' @param beta a p-vector of parameter (starting values)
+#' @param c tuning parameter for Tukey's weight (default value is 4.685061)
+#' @param maxit max number of iteration for IRWLS
+#' @param tol tolerance for stopping criterion
+#' @param verbose print info
 roblogisticMqle1 <- function(y, x, start, c = 4.685061, maxit = 200L, tol = 1e-7, verbose = FALSE) {
     .Call('_JINIpaper_roblogisticMqle1', PACKAGE = 'JINIpaper', y, x, start, c, maxit, tol, verbose)
 }
@@ -110,7 +147,6 @@ roblogisticMqle1 <- function(y, x, start, c = 4.685061, maxit = 200L, tol = 1e-7
 #' @param maxit max number of iteration for IRWLS
 #' @param tol tolerance for stopping criterion
 #' @param verbose print info
-#' @export
 roblogisticMqle <- function(y, x, start, c = 4.685061, maxit = 200L, tol = 1e-7, verbose = FALSE) {
     .Call('_JINIpaper_roblogisticMqle', PACKAGE = 'JINIpaper', y, x, start, c, maxit, tol, verbose)
 }
@@ -120,7 +156,6 @@ roblogisticMqle <- function(y, x, start, c = 4.685061, maxit = 200L, tol = 1e-7,
 #' @param x a n x p matrix of design
 #' @param beta a p-vector of parameter (starting values)
 #' @param c tuning parameter for Tukey's weights (default value is 4.685061)
-#' @export
 roblogisticMqleVar <- function(x, start, c = 4.685061) {
     .Call('_JINIpaper_roblogisticMqleVar', PACKAGE = 'JINIpaper', x, start, c)
 }
@@ -183,7 +218,6 @@ r_logistic <- function(beta, x, seed) {
 #' @param tol tolerance for stopping criterion
 #' @param verbose print info
 #' @param seed for random number generator
-#' @export
 IBroblogisticWmle1 <- function(x, start, c = 4.685061, H = 200L, maxit = 200L, tol = 1e-7, verbose = FALSE, seed = 321L) {
     .Call('_JINIpaper_IBroblogisticWmle1', PACKAGE = 'JINIpaper', x, start, c, H, maxit, tol, verbose, seed)
 }
@@ -198,7 +232,6 @@ IBroblogisticWmle1 <- function(x, start, c = 4.685061, H = 200L, maxit = 200L, t
 #' @param verbose print info
 #' @param seed for random number generator
 #' @param k constant for stochastic approximation (1 by default)
-#' @export
 StocApproblogisticWmle1 <- function(x, start, c = 4.685061, maxit = 10000L, tol = 1e-7, verbose = FALSE, seed = 321L, k = 1) {
     .Call('_JINIpaper_StocApproblogisticWmle1', PACKAGE = 'JINIpaper', x, start, c, maxit, tol, verbose, seed, k)
 }
@@ -208,7 +241,6 @@ StocApproblogisticWmle1 <- function(x, start, c = 4.685061, maxit = 10000L, tol 
 #' @param y a vector of responses
 #' @param x a n x p matrix of design
 #' @param c tuning parameter for Tukey's weight (default value is 4.685061)
-#' @export
 logistic_wmle <- function(y, x, c = 4.685061) {
     .Call('_JINIpaper_logistic_wmle', PACKAGE = 'JINIpaper', y, x, c)
 }
@@ -218,7 +250,6 @@ logistic_wmle <- function(y, x, c = 4.685061) {
 #' @param y a vector of responses
 #' @param x a n x p matrix of design
 #' @param c tuning parameter for Tukey's weight (default value is 4.685061)
-#' @export
 logistic_mqle <- function(y, x, c = 4.685061) {
     .Call('_JINIpaper_logistic_mqle', PACKAGE = 'JINIpaper', y, x, c)
 }

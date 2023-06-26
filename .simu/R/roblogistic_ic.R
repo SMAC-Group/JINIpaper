@@ -1,5 +1,3 @@
-# Plot point estimates with 1-alpha CI
-source(".simu/R/figures.R")
 # for verifying a confidence interval
 check_ci <- function(ci,theta){
   if(any(is.na(ci))) return(NA_real_)
@@ -15,11 +13,9 @@ check_ci <- function(ci,theta){
 # -----------------
 # Inconsistent case
 # -----------------
-n_setting <- 1
-i=3
-load(paste0(".simu/data/roblogistic_1_sd_setting_",i,".rds"))
+load(".simu/data/roblogistic_2_n_200_p_20.rds")
 n_methods <- length(res$setting$method) - 1 # minus initial
-p <- as.integer(res$setting$p) +1
+p <- as.integer(res$setting$p)
 MC <- as.integer(res$setting$MC)
 lab_beta <- c("$\\beta_0$","$\\beta_{1}$","$\\beta_{2}$",
               "$\\beta_{4:p}$")
@@ -29,19 +25,29 @@ lab_main <- paste0("$n=",res$setting$n,"$")
 eval(str2expression(res$setting$beta))
 alpha <- .05
 
-which_beta <- 3
-CI <- list(
-  jimi = res$jimi[,which_beta] + matrix(qnorm(c(alpha/2,1-alpha/2)),nr=MC,nc=2,byr=T) * cbind(res$jimi_sd[,which_beta],res$jimi_sd[,which_beta]),
-  consistent = res$consistent[,which_beta] + matrix(qnorm(c(alpha/2,1-alpha/2)),nr=MC,nc=2,byr=T) * cbind(res$consistent_sd[,which_beta],res$consistent_sd[,which_beta]),
-  robCR = res$robCR[,which_beta] + matrix(qnorm(c(alpha/2,1-alpha/2)),nr=MC,nc=2,byr=T) * cbind(res$robCR_sd[,which_beta],res$robCR_sd[,which_beta]),
-  robBY = res$robBY[,which_beta] + matrix(qnorm(c(alpha/2,1-alpha/2)),nr=MC,nc=2,byr=T) * cbind(res$robBY_sd[,which_beta],res$robBY_sd[,which_beta]),
-  mle = res$mle[,which_beta] + matrix(qnorm(c(alpha/2,1-alpha/2)),nr=MC,nc=2,byr=T) * cbind(res$mle_sd[,which_beta],res$mle_sd[,which_beta]),
-  br = res$br[,which_beta] + matrix(qnorm(c(alpha/2,1-alpha/2)),nr=MC,nc=2,byr=T) * cbind(res$br_sd[,which_beta],res$br_sd[,which_beta])
-)
-lapply(CI,FUN=function(x) mean(apply(x,1,function(y){check_ci(ci=y,theta=beta[which_beta])})=="center",na.rm=T))
-lapply(CI,FUN=function(x) mean(apply(x,1,function(y){check_ci(ci=y,theta=beta[which_beta])})=="left",na.rm=T))
-lapply(CI,FUN=function(x) mean(apply(x,1,function(y){check_ci(ci=y,theta=beta[which_beta])})=="right",na.rm=T))
-lapply(CI,FUN=function(x) median(apply(x,1,diff),na.rm=T))
+CI_center <- matrix(nr=6,nc=length(beta))
+CI_left <- matrix(nr=6,nc=length(beta))
+CI_right <- matrix(nr=6,nc=length(beta))
+for(i in seq_along(beta)){
+  which_beta <- i
+  CI <- list(
+    jimi = res$jimi[,which_beta] + matrix(qnorm(c(alpha/2,1-alpha/2)),nr=MC,nc=2,byr=T) * matrix(apply(res$jimi,2,mad,na.rm=T,constant=1.75)[which_beta],nr=MC,nc=2),#cbind(res$jimi_sd[,which_beta],res$jimi_sd[,which_beta]),
+    consistent = res$consistent[,which_beta] + matrix(qnorm(c(alpha/2,1-alpha/2)),nr=MC,nc=2,byr=T) * cbind(res$consistent_sd[,which_beta],res$consistent_sd[,which_beta]),
+    robCR = res$robCR[,which_beta] + matrix(qnorm(c(alpha/2,1-alpha/2)),nr=MC,nc=2,byr=T) * cbind(res$robCR_sd[,which_beta],res$robCR_sd[,which_beta]),
+    robBY = res$robBY[,which_beta] + matrix(qnorm(c(alpha/2,1-alpha/2)),nr=MC,nc=2,byr=T) * cbind(res$robBY_sd[,which_beta],res$robBY_sd[,which_beta]),
+    mle = res$mle[,which_beta] + matrix(qnorm(c(alpha/2,1-alpha/2)),nr=MC,nc=2,byr=T) * cbind(res$mle_sd[,which_beta],res$mle_sd[,which_beta]),
+    br = res$br[,which_beta] + matrix(qnorm(c(alpha/2,1-alpha/2)),nr=MC,nc=2,byr=T) * cbind(res$br_sd[,which_beta],res$br_sd[,which_beta])
+  )
+  CI_center[,i] <- sapply(CI,FUN=function(x) mean(apply(x,1,function(y){check_ci(ci=y,theta=beta[which_beta])})=="center",na.rm=T))
+  CI_left[,i] <- sapply(CI,FUN=function(x) mean(apply(x,1,function(y){check_ci(ci=y,theta=beta[which_beta])})=="left",na.rm=T))
+  CI_right[,i] <- sapply(CI,FUN=function(x) mean(apply(x,1,function(y){check_ci(ci=y,theta=beta[which_beta])})=="right",na.rm=T))
+}
+
+plot(x=seq_along(beta),y=CI_center[1,],type="b",pch=19,ylim=c(.93,1))
+for(i in 2:6) lines(x=seq_along(beta), y=CI_center[i,],pch=19,type="b", col=i)
+ci <- binom.test(950,1000,p=.95)$conf.int
+abline(h=ci)
+
 
 par(mar = c(7.5,4,4,2)+.1)
 plot(NA, xlim = c(0.5, length(MC) + 0.5), ylim = c(-1, 1), 

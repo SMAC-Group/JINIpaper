@@ -9,6 +9,8 @@ library(stocapp)
 library(ib)
 library(betareg)
 
+readRenviron(".simu/R/setting_betareg.sh")
+
 # simulation specifics
 MC <- as.integer(Sys.getenv("MC")) # number of simulations
 model0 <- as.character(Sys.getenv("MODEL"))
