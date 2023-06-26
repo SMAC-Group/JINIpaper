@@ -1,5 +1,6 @@
 library(VGAM)
 library(JINIpaper)
+library(RcppDE)
 
 # Pareto
 n <- 150
@@ -15,15 +16,22 @@ means <- exp(cbind(1,x) %*% beta0)
 B <- 200
 fit_estimators0 <- fit_estimators1 <- fit_estimators2 <- fit_estimators3 <- fit_estimators4 <- matrix(nr=B,nc=p0-1)
 scale_est <- matrix(nr=B,nc=3)
-cc <- 10
+cc <- 9
 
 for(b in 1:B) {
   set.seed(48374+b)
   y <- rpareto(n, scale = x0, shape = means)
-  # y[sample.int(n,5)] <- 1e6#rpareto(5, scale = 3 * x0, shape = 3)
+  # y[1] <- 1e6
+  # y[sample.int(n,5)] <- rpareto(5, scale = 5 * x0, shape = 3)
   
-  fit1 <- paretoMle(y, x, start = rep(0,p0-1))
-  fit2 <- paretoWmle1(y,x,fit1$coefficients,c = cc)
+  fit1 <- paretoMle(y, x, start = rep(0,p0-2), verbose = T)
+  sv <- DEoptim(fn = paretoWmle_of, lower = rep(-3,p0-2), upper = rep(3,p0-2), y=y, x=x, c=cc, control = DEoptim.control(trace = FALSE, NP = 100 * length(beta0)))
+  paretoWmle1(y, x, start = rep(0,p0-2), c = cc, verbose=T)
+  paretoWmle1(y, x, start = fit1$coefficients, c = cc, verbose=T)
+  paretoWmle1(y, x, start = beta0, c = cc, verbose=T)
+  paretoWmle1(y, x, start = sv$optim$bestmem, c = cc, verbose=T)
+  
+  fit2 <- paretoWmle1(y,x,start = beta0,c = cc, verbose=T)
   if(fit2$conv !=0 ) next
   if(any(abs(fit2$coefficients)>1e3)) next
   fit_estimators2[b,] <- fit2$coefficients
@@ -35,14 +43,14 @@ for(b in 1:B) {
   fit_estimators1[b,] <- fit1$coefficients
   
   
-  fit3 <- paretoWmle1_ib(x, c(fit2$coefficients, fit2$scale), c = cc, H=100, seed = 98473+b, verbose=T)
-  fit_estimators3[b,] <- fit3$estimate[1:(p0-1)]
-  scale_est[b,1] <- min(y)
-  scale_est[b,3] <- fit3$estimate[p0]
-
-  fit4 <- paretoWmle1_ib(x, c(fit1$coefficients, fit1$scale), c = Inf, H=100, seed = 98473+b)
-  fit_estimators4[b,] <- fit4$estimate[1:(p0-1)]
-  scale_est[b,2] <- fit4$estimate[p0]
+  # fit3 <- paretoWmle1_ib(x, c(fit2$coefficients, fit2$scale), c = cc, H=100, seed = 98473+b, verbose=T)
+  # fit_estimators3[b,] <- fit3$estimate[1:(p0-1)]
+  # scale_est[b,1] <- min(y)
+  # scale_est[b,3] <- fit3$estimate[p0]
+  # 
+  # fit4 <- paretoWmle1_ib(x, c(fit1$coefficients, fit1$scale), c = Inf, H=100, seed = 98473+b)
+  # fit_estimators4[b,] <- fit4$estimate[1:(p0-1)]
+  # scale_est[b,2] <- fit4$estimate[p0]
   
   cat(b,"\n")
 }
@@ -51,8 +59,8 @@ y_lim <- c(-1,1)
 par(mfrow = c(1,2))
 # boxplot(fit_estimators0-matrix(beta0,nc=p0-1,nr=B,byrow=T),ylim=y_lim);abline(h=0)
 boxplot(fit_estimators1-matrix(beta0,nc=p0-1,nr=B,byrow=T),ylim=y_lim,main="MLE");abline(h=0)
-# boxplot(fit_estimators2-matrix(beta0,nc=p0-1,nr=B,byrow=T),ylim=y_lim);abline(h=0)
-boxplot(fit_estimators3-matrix(beta0,nc=p0-1,nr=B,byrow=T),ylim=y_lim,main="IB on WMLE");abline(h=0)
+boxplot(fit_estimators2-matrix(beta0,nc=p0-1,nr=B,byrow=T),ylim=y_lim);abline(h=0)
+# boxplot(fit_estimators3-matrix(beta0,nc=p0-1,nr=B,byrow=T),ylim=y_lim,main="IB on WMLE");abline(h=0)
 par(mfrow = c(1,1))
 
 colSums(is.na(fit_estimators2))

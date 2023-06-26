@@ -88,7 +88,7 @@ Rcpp::List paretoMle(
 
 // Robust case (TODO: Fisher scoring)
 
-//' Robust logistic regression initial estimator (inconsistent) with Tukey's weights
+//' Robust Pareto regression initial estimator (inconsistent) with Tukey's weights
 //'
 //' @param y a vector of responses
 //' @param x a n x p matrix of design
@@ -148,10 +148,17 @@ Rcpp::List paretoWmle1(
      
      // If more than 50% of the weights are okay, continue
      unsigned int m = ind.size();
+     
+     double ratio = (double)m / (double)n;
+     if(verbose) {
+       Rcpp::Rcout << "There is " << 1 - ratio << " % of negative weights at iteration " << it << std::endl;
+     }
+     
      if(m < std::round(0.5 * n)){
        conv = 1;
        break;
      }
+     
      
      // Fisher scoring
      Eigen::MatrixXd x2(m,p+1);
@@ -227,4 +234,53 @@ Eigen::ArrayXd r_pareto(
      y(i) = k / std::pow(u, 1.0 / mu(i));
    }
    return y;
+ }
+
+
+
+//' Robust Pareto regression initial estimator (inconsistent) with Tukey's weights
+//'
+//' @param start a p-vector of parameter (starting values)
+//' @param y a vector of responses
+//' @param x a n x p matrix of design
+//' @param c tuning parameter for Tukey's weight (default value is 4.685061)
+//' @export
+// [[Rcpp::export]]
+double paretoWmle_of(
+     Eigen::VectorXd& start,
+     Eigen::ArrayXd& y,
+     Eigen::MatrixXd& x,
+     double c = 4.685061
+ ){
+   unsigned int n = y.size();
+   unsigned int p = x.cols();
+   unsigned int p1 = p+1;
+   
+   // data storage
+   Eigen::VectorXd mu(n),eta(n),z(n);
+   Eigen::MatrixXd x1(n,p1);
+   double xp, s, y0, t1, t11, wT;
+   Eigen::MatrixXd A(p1,p1);
+   Eigen::VectorXd b(p1),Dbeta(p1),beta(p1);
+   
+   // pre-computation
+   x1.rightCols(p) = x;
+   x1.col(0) = Eigen::VectorXd::Constant(n,1.0);
+   y0 = y.minCoeff();
+   
+   // Compute w, z
+   eta = x1 * start;
+   mu = (eta).unaryExpr(Exp());
+   for(unsigned int j=0;j<n;++j){
+     xp = x1.row(j).norm(); // l2-norm but any norm would be possible
+     t1 = mu(j) * std::log(y0 / y(j));
+     t11 = 0.1e1 + t1;
+     s = std::abs(t11) * xp; 
+     wT = wc(s, c);
+     z(j) = t11 * wT; 
+   }
+   
+   const double of = (x1.transpose() * z).squaredNorm();
+   
+   return of;
  }

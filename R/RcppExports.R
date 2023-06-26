@@ -100,7 +100,7 @@ paretoMle <- function(y, x, start, maxit = 200L, tol = 1e-7, verbose = FALSE) {
     .Call('_JINIpaper_paretoMle', PACKAGE = 'JINIpaper', y, x, start, maxit, tol, verbose)
 }
 
-#' Robust logistic regression initial estimator (inconsistent) with Tukey's weights
+#' Robust Pareto regression initial estimator (inconsistent) with Tukey's weights
 #'
 #' @param y a vector of responses
 #' @param x a n x p matrix of design
@@ -123,6 +123,17 @@ paretoWmle1 <- function(y, x, start, c = 4.685061, maxit = 200L, tol = 1e-7, ver
 #' @export
 r_pareto <- function(beta, k, x, seed) {
     .Call('_JINIpaper_r_pareto', PACKAGE = 'JINIpaper', beta, k, x, seed)
+}
+
+#' Robust Pareto regression initial estimator (inconsistent) with Tukey's weights
+#'
+#' @param start a p-vector of parameter (starting values)
+#' @param y a vector of responses
+#' @param x a n x p matrix of design
+#' @param c tuning parameter for Tukey's weight (default value is 4.685061)
+#' @export
+paretoWmle_of <- function(start, y, x, c = 4.685061) {
+    .Call('_JINIpaper_paretoWmle_of', PACKAGE = 'JINIpaper', start, y, x, c)
 }
 
 #' Robust logistic regression initial (inconsistent) estimator with Tukey's weights
