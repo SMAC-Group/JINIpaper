@@ -178,6 +178,23 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// paretoWmle1H
+Rcpp::List paretoWmle1H(Eigen::ArrayXd& y, Eigen::MatrixXd& x, Eigen::VectorXd& start, double c, unsigned int maxit, double tol, bool verbose);
+RcppExport SEXP _JINIpaper_paretoWmle1H(SEXP ySEXP, SEXP xSEXP, SEXP startSEXP, SEXP cSEXP, SEXP maxitSEXP, SEXP tolSEXP, SEXP verboseSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< Eigen::ArrayXd& >::type y(ySEXP);
+    Rcpp::traits::input_parameter< Eigen::MatrixXd& >::type x(xSEXP);
+    Rcpp::traits::input_parameter< Eigen::VectorXd& >::type start(startSEXP);
+    Rcpp::traits::input_parameter< double >::type c(cSEXP);
+    Rcpp::traits::input_parameter< unsigned int >::type maxit(maxitSEXP);
+    Rcpp::traits::input_parameter< double >::type tol(tolSEXP);
+    Rcpp::traits::input_parameter< bool >::type verbose(verboseSEXP);
+    rcpp_result_gen = Rcpp::wrap(paretoWmle1H(y, x, start, c, maxit, tol, verbose));
+    return rcpp_result_gen;
+END_RCPP
+}
 // roblogisticMqle1
 Rcpp::List roblogisticMqle1(Eigen::ArrayXd& y, Eigen::MatrixXd& x, Eigen::VectorXd& start, double c, unsigned int maxit, double tol, bool verbose);
 RcppExport SEXP _JINIpaper_roblogisticMqle1(SEXP ySEXP, SEXP xSEXP, SEXP startSEXP, SEXP cSEXP, SEXP maxitSEXP, SEXP tolSEXP, SEXP verboseSEXP) {
@@ -360,6 +377,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_JINIpaper_paretoWmle1", (DL_FUNC) &_JINIpaper_paretoWmle1, 7},
     {"_JINIpaper_r_pareto", (DL_FUNC) &_JINIpaper_r_pareto, 4},
     {"_JINIpaper_paretoWmle_of", (DL_FUNC) &_JINIpaper_paretoWmle_of, 4},
+    {"_JINIpaper_paretoWmle1H", (DL_FUNC) &_JINIpaper_paretoWmle1H, 7},
     {"_JINIpaper_roblogisticMqle1", (DL_FUNC) &_JINIpaper_roblogisticMqle1, 7},
     {"_JINIpaper_roblogisticMqle", (DL_FUNC) &_JINIpaper_roblogisticMqle, 7},
     {"_JINIpaper_roblogisticMqleVar", (DL_FUNC) &_JINIpaper_roblogisticMqleVar, 3},

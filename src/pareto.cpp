@@ -37,7 +37,7 @@ Rcpp::List paretoMle(
    // data storage
    Eigen::VectorXd mu(n),eta(n),z(n);
    Eigen::MatrixXd x1(n,p+1);
-   double y0, t1;
+   double y0;
    Eigen::MatrixXd A(p1,p1);
    Eigen::VectorXd b(p1),Dbeta(p1),beta(p1);
    
@@ -45,7 +45,6 @@ Rcpp::List paretoMle(
    x1.rightCols(p) = x;
    x1.col(0) = Eigen::VectorXd::Constant(n,1.0);
    y0 = y.minCoeff();
-   t1 = std::log(y0);
    A = x1.transpose() * x1;
    
    // Fisher scoring
@@ -55,7 +54,11 @@ Rcpp::List paretoMle(
      eta = x1 * start;
      mu = (eta).unaryExpr(Exp());
      for(unsigned int j=0;j<n;++j){
-       z(j) = 0.1e1 + mu(j) * t1 - mu(j) * std::log(y(j)); 
+       if(y0 / y(j) <= 0.0) { // handle case when y is too large
+         z(j) = 0.0;
+       } else {
+         z(j) = 0.1e1 + mu(j) * std::log(y0 / y(j)); 
+       }
      }
      
      // Fisher scoring
@@ -75,6 +78,14 @@ Rcpp::List paretoMle(
      if(relE <= tol){
        conv = 0;
        break;
+     }
+     
+     if(!std::isfinite(relE)) {
+       conv = 1;
+       break;
+       if(verbose) {
+         Rcpp::Rcout << "Algorithm stopped because of non-finite difference!" << std::endl;
+       }
      }
    }
    
@@ -143,7 +154,7 @@ Rcpp::List paretoWmle1(
        wT = wc(s, c);
        z0(j) = t11 * wT; 
        w0(j) = wc1(s, c) * t11 * t1 * xp * t2 + wT * t1;
-       if(wT>0){ind.push_back(j);}
+       if(w0(j)<0){ind.push_back(j);}
      }
      
      // If more than 50% of the weights are okay, continue
@@ -151,7 +162,7 @@ Rcpp::List paretoWmle1(
      
      double ratio = (double)m / (double)n;
      if(verbose) {
-       Rcpp::Rcout << "There is " << 1 - ratio << " % of negative weights at iteration " << it << std::endl;
+       Rcpp::Rcout << "There is " << 100 - 100 * ratio << " % of negative weights at iteration " << it << std::endl;
      }
      
      if(m < std::round(0.5 * n)){
@@ -187,6 +198,14 @@ Rcpp::List paretoWmle1(
      if(relE <= tol){
        conv = 0;
        break;
+     }
+     
+     if(!std::isfinite(relE)) {
+       conv = 1;
+       break;
+       if(verbose) {
+         Rcpp::Rcout << "Algorithm stopped because of non-finite difference!" << std::endl;
+       }
      }
    }
    
@@ -283,4 +302,99 @@ double paretoWmle_of(
    const double of = (x1.transpose() * z).squaredNorm();
    
    return of;
+ }
+
+//' Robust Pareto regression initial estimator (inconsistent) with Huber's weights
+//'
+//' @param y a vector of responses
+//' @param x a n x p matrix of design
+//' @param beta a p-vector of parameter (starting values)
+//' @param c tuning parameter for Huber's weight (default value is 1.345)
+//' @param maxit max number of iteration for IRWLS
+//' @param tol tolerance for stopping criterion
+//' @param verbose print info
+//' @export
+// [[Rcpp::export]]
+Rcpp::List paretoWmle1H(
+     Eigen::ArrayXd& y,
+     Eigen::MatrixXd& x,
+     Eigen::VectorXd& start,
+     double c = 1.345,
+     unsigned int maxit=200,
+     double tol=1e-7,
+     bool verbose=false
+ ){
+   unsigned int n = y.size();
+   unsigned int p = x.cols();
+   unsigned int p1 = p+1;
+   unsigned int conv = 1;
+   
+   // data storage
+   Eigen::VectorXd mu(n),eta(n),z(n);
+   Eigen::MatrixXd x1(n,p+1);
+   Eigen::MatrixXd w = Eigen::MatrixXd::Zero(n,n);
+   double xp, s, y0, t1, t11, wT, t2;
+   Eigen::MatrixXd A(p1,p1);
+   Eigen::VectorXd b(p1),Dbeta(p1),beta(p1);
+   
+   // pre-computation
+   x1.rightCols(p) = x;
+   x1.col(0) = Eigen::VectorXd::Constant(n,1.0);
+   y0 = y.minCoeff();
+   
+   // Newton-Raphson method
+   unsigned int it = 0;
+   while(it < maxit){
+     // Compute w, z
+     eta = x1 * start;
+     mu = (eta).unaryExpr(Exp());
+     for(unsigned int j=0;j<n;++j){
+       t2 = 1;
+       xp = x1.row(j).norm(); // l2-norm but any norm would be possible
+       t1 = mu(j) * std::log(y0 / y(j));
+       if(t1 < -1){t2 = -1;}
+       if(t1 == -1){t2 = 0.0;}
+       t11 = 0.1e1 + t1;
+       s = std::abs(t11) * xp; 
+       wT = wH(s, c);
+       z(j) = t11 * wT; 
+       w(j,j) = wH1(s, c) * t11 * t1 * xp * t2 + wT * t1;
+     }
+     
+     
+     // Fisher scoring
+     A = -x1.transpose() * w * x1;
+     b = x1.transpose() * z;
+     Dbeta = A.bdcSvd(Eigen::ComputeThinU | Eigen::ComputeThinV).solve(b);
+     beta = start + Dbeta;
+     
+     // Check convergence
+     double relE = std::sqrt(Dbeta.squaredNorm() / std::max(1e-20, start.squaredNorm()));
+     ++it;
+     
+     if(verbose) {
+       Rcpp::Rcout << "Relative error " << relE << " at iteration " << it << std::endl;
+     }
+     start = beta;
+     
+     if(relE <= tol){
+       conv = 0;
+       break;
+     }
+     
+     if(!std::isfinite(relE)) {
+       conv = 1;
+       break;
+       if(verbose) {
+         Rcpp::Rcout << "Algorithm stopped because of non-finite difference!" << std::endl;
+       }
+     }
+   }
+   
+   return Rcpp::List::create(
+     Rcpp::Named("coefficients") = beta,
+     Rcpp::Named("scale") = y0,
+     Rcpp::Named("maxit") = it,
+     Rcpp::Named("conv") = conv
+   );
  }

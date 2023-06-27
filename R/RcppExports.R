@@ -136,6 +136,20 @@ paretoWmle_of <- function(start, y, x, c = 4.685061) {
     .Call('_JINIpaper_paretoWmle_of', PACKAGE = 'JINIpaper', start, y, x, c)
 }
 
+#' Robust Pareto regression initial estimator (inconsistent) with Huber's weights
+#'
+#' @param y a vector of responses
+#' @param x a n x p matrix of design
+#' @param beta a p-vector of parameter (starting values)
+#' @param c tuning parameter for Huber's weight (default value is 1.345)
+#' @param maxit max number of iteration for IRWLS
+#' @param tol tolerance for stopping criterion
+#' @param verbose print info
+#' @export
+paretoWmle1H <- function(y, x, start, c = 1.345, maxit = 200L, tol = 1e-7, verbose = FALSE) {
+    .Call('_JINIpaper_paretoWmle1H', PACKAGE = 'JINIpaper', y, x, start, c, maxit, tol, verbose)
+}
+
 #' Robust logistic regression initial (inconsistent) estimator with Tukey's weights
 #'
 #' @param y a vector of responses

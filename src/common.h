@@ -54,5 +54,21 @@ struct Indicator {
 // Tukey's weight:
 inline double wc(double x, double c){return (std::abs(x) <= c) ? 0.1e1 - 0.2e1 * x*x/c/c + x*x*x*x/c/c/c/c : 0.0;}
 inline double wc1(double x, double c){return (std::abs(x) <= c) ? - 0.4e1 * x/c/c + 0.4e1 * x*x*x/c/c/c/c : 0.0;}
+// Huber's weight:
+inline double wH(double x, double c){return (std::abs(x) <= c) ? 0.1e1 : c / std::abs(x); }
+// from https://stackoverflow.com/questions/1903954/is-there-a-standard-sign-function-signum-sgn-in-c-c
+template <typename T> inline constexpr
+  int signum(T x, std::false_type is_signed) {
+    return T(0) < x;
+}
+template <typename T> inline constexpr
+  int signum(T x, std::true_type is_signed) {
+    return (T(0) < x) - (x < T(0));
+}
+template <typename T> inline constexpr
+  int signum(T x) {
+    return signum(x, std::is_signed<T>());
+}
+inline double wH1(double x, double c){return (std::abs(x) <= c) ? 0.0 : c * signum(x); }
 
 #endif

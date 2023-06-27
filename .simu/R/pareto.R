@@ -1,6 +1,12 @@
 library(VGAM)
 library(JINIpaper)
-library(RcppDE)
+# library(RcppDE)
+
+starting_values <- function(y, p){
+  x <- log(y[-which.min(y)])
+  stat <- boxplot.stats(x)
+  c(exp(1/mean(x[!x%in%stat$out])), rep(0,p))
+}
 
 # Pareto
 n <- 150
@@ -23,15 +29,17 @@ for(b in 1:B) {
   y <- rpareto(n, scale = x0, shape = means)
   # y[1] <- 1e6
   # y[sample.int(n,5)] <- rpareto(5, scale = 5 * x0, shape = 3)
+  sv <- starting_values(y, p0-2)
   
-  fit1 <- paretoMle(y, x, start = rep(0,p0-2), verbose = T)
-  sv <- DEoptim(fn = paretoWmle_of, lower = rep(-3,p0-2), upper = rep(3,p0-2), y=y, x=x, c=cc, control = DEoptim.control(trace = FALSE, NP = 100 * length(beta0)))
-  paretoWmle1(y, x, start = rep(0,p0-2), c = cc, verbose=T)
-  paretoWmle1(y, x, start = fit1$coefficients, c = cc, verbose=T)
-  paretoWmle1(y, x, start = beta0, c = cc, verbose=T)
-  paretoWmle1(y, x, start = sv$optim$bestmem, c = cc, verbose=T)
+  fit1 <- paretoMle(y, x, start = sv, verbose = F)
+  # sv <- DEoptim(fn = paretoWmle_of, lower = rep(-3,p0-2), upper = rep(3,p0-2), y=y, x=x, c=cc, control = DEoptim.control(trace = FALSE, NP = 100 * length(beta0)))
+  # paretoWmle1(y, x, start = c(1.7,rep(0,p0-3)), c = cc, verbose=T)
+  # paretoWmle1H(y, x, start = c(1.7,rep(0,p0-3)), c = cc, verbose=T)
+  # paretoWmle1(y, x, start = fit1$coefficients, c = cc, verbose=T)
+  # paretoWmle1(y, x, start = beta0, c = cc, verbose=T)
+  # paretoWmle1(y, x, start = sv$optim$bestmem, c = cc, verbose=T)
   
-  fit2 <- paretoWmle1(y,x,start = beta0,c = cc, verbose=T)
+  fit2 <- paretoWmle1(y, x, start = sv, c = cc, verbose=F)
   if(fit2$conv !=0 ) next
   if(any(abs(fit2$coefficients)>1e3)) next
   fit_estimators2[b,] <- fit2$coefficients
