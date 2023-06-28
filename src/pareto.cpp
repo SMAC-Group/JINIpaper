@@ -54,11 +54,11 @@ Rcpp::List paretoMle(
      eta = x1 * start;
      mu = (eta).unaryExpr(Exp());
      for(unsigned int j=0;j<n;++j){
-       if(y0 / y(j) <= 0.0) { // handle case when y is too large
-         z(j) = 0.0;
-       } else {
+       // if(y0 / y(j) <= 0.0) { // handle case when y is too large
+       //   z(j) = 0.0;
+       // } else {
          z(j) = 0.1e1 + mu(j) * std::log(y0 / y(j)); 
-       }
+       // }
      }
      
      // Fisher scoring
@@ -81,11 +81,11 @@ Rcpp::List paretoMle(
      }
      
      if(!std::isfinite(relE)) {
-       conv = 1;
-       break;
        if(verbose) {
          Rcpp::Rcout << "Algorithm stopped because of non-finite difference!" << std::endl;
        }
+       conv = 1;
+       break;
      }
    }
    
@@ -201,11 +201,11 @@ Rcpp::List paretoWmle1(
      }
      
      if(!std::isfinite(relE)) {
-       conv = 1;
-       break;
        if(verbose) {
          Rcpp::Rcout << "Algorithm stopped because of non-finite difference!" << std::endl;
        }
+       conv = 1;
+       break;
      }
    }
    

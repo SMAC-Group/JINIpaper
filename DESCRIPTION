@@ -23,6 +23,7 @@ Imports:
     Rcpp,
     Rdpack (>= 0.7),
     stats,
+    VGAM,
     utils
 Suggests:
     testthat (>= 3.0.0),

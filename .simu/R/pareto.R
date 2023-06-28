@@ -1,28 +1,41 @@
 library(VGAM)
 library(JINIpaper)
 # library(RcppDE)
+# library(MASS)
 
 starting_values <- function(y, p){
   x <- log(y[-which.min(y)])
   stat <- boxplot.stats(x)
   c(exp(1/mean(x[!x%in%stat$out])), rep(0,p))
 }
+# 
+starting_values <- function(y, x){
+  y0 <- log(log(y[-which.min(y)]))
+  x0 <- x[-which.min(y),]
+  stat <- boxplot.stats(y0)
+  ind <- !y0%in%stat$out
+  y0 <- y0[ind]
+  x0 <- x0[ind,]
+  fit_vglm <- vglm(y0 ~ x0, paretoff)
+  coef(fit_vglm)
+}
+
 
 # Pareto
 n <- 150
-p0 <- 32
+p0 <- 12
 p <- p0 - 2
 x0 <- 5
 set.seed(9237423)
 x <- matrix(rnorm(n * p, sd= 1 / sqrt(n)),nr=n)
-beta0 <- c(1.5,-1,-1,1,1,rep(c(-.1,.1),(p-4)/2)[1:(p-4)])
+beta0 <- c(1.5,-2,-2,2,2,rep(c(-.1,.1),(p-4)/2)[1:(p-4)])
 theta0 <- c(beta0,x0)
 means <- exp(cbind(1,x) %*% beta0)
 # summary(means)
 B <- 200
 fit_estimators0 <- fit_estimators1 <- fit_estimators2 <- fit_estimators3 <- fit_estimators4 <- matrix(nr=B,nc=p0-1)
 scale_est <- matrix(nr=B,nc=3)
-cc <- 9
+cc <- 13
 
 for(b in 1:B) {
   set.seed(48374+b)
@@ -30,8 +43,11 @@ for(b in 1:B) {
   # y[1] <- 1e6
   # y[sample.int(n,5)] <- rpareto(5, scale = 5 * x0, shape = 3)
   sv <- starting_values(y, p0-2)
+  # fit_glm <- rlm(log(y) ~ x)
+  
   
   fit1 <- paretoMle(y, x, start = sv, verbose = F)
+  fit1 <- vglm(y ~ x, paretoff, coefstart = sv)
   # sv <- DEoptim(fn = paretoWmle_of, lower = rep(-3,p0-2), upper = rep(3,p0-2), y=y, x=x, c=cc, control = DEoptim.control(trace = FALSE, NP = 100 * length(beta0)))
   # paretoWmle1(y, x, start = c(1.7,rep(0,p0-3)), c = cc, verbose=T)
   # paretoWmle1H(y, x, start = c(1.7,rep(0,p0-3)), c = cc, verbose=T)
@@ -51,7 +67,7 @@ for(b in 1:B) {
   fit_estimators1[b,] <- fit1$coefficients
   
   
-  # fit3 <- paretoWmle1_ib(x, c(fit2$coefficients, fit2$scale), c = cc, H=100, seed = 98473+b, verbose=T)
+  fit3 <- paretoWmle1_ib(x, c(fit2$coefficients, fit2$scale), c = cc, H=100, seed = 98473+b, verbose=T)
   # fit_estimators3[b,] <- fit3$estimate[1:(p0-1)]
   # scale_est[b,1] <- min(y)
   # scale_est[b,3] <- fit3$estimate[p0]
@@ -59,6 +75,8 @@ for(b in 1:B) {
   # fit4 <- paretoWmle1_ib(x, c(fit1$coefficients, fit1$scale), c = Inf, H=100, seed = 98473+b)
   # fit_estimators4[b,] <- fit4$estimate[1:(p0-1)]
   # scale_est[b,2] <- fit4$estimate[p0]
+  
+  fit4 <- pareto_vglm_ib(x, thetastart = c(Coef(fit1), fit1@extra$scale), H = 100, verbose = T, seed = 98473+b)
   
   cat(b,"\n")
 }
