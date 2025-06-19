@@ -145,7 +145,7 @@ r_logistic_misc <- function(thetas, x, seed, FN, FP){
   set.seed(seed)
   n <- nrow(x)
   p <- ncol(x)
-  eta <- x %*% thetas
+  eta <- cbind(1,x) %*% thetas
   prob <- exp(eta) / (1 + exp(eta))
   mu_star <- FP * (1 - prob) + (1 - FN) * prob
   rbinom(n, size=1, prob=mu_star)
