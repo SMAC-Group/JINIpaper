@@ -6,9 +6,9 @@
 # packages
 library(JINIpaper)
 library(VGAM)
-library(ib)
 
 readRenviron(".simu/R/setting_pareto.sh")
+
 ## simulation specifics
 MC <- as.integer(Sys.getenv("MC")) # number of simulations
 model0 <- as.character(Sys.getenv("MODEL"))
@@ -48,12 +48,8 @@ res <- list(mle = matrix(ncol=p+2,nrow=MC),
 	    time = matrix(ncol=4, nrow=MC)) 
 colnames(res$time) <- c("mle", "initial", "jimi_rob", "jimi_mle")
 
-##------------------ Slurm specs --------------
-n_array <- as.integer(Sys.getenv("N_ARRAY"))
-ind <- matrix(seq_len(MC),nr=n_array,byr=T)
-id_slurm <- Sys.getenv("SLURM_ARRAY_TASK_ID")
 
-for(m in na.omit(ind[as.numeric(id_slurm),])){
+for(m in 1:MC){
  ##------- simulate the process ---------
   # set the seed
   set.seed(seed$process[m])
@@ -64,17 +60,7 @@ for(m in na.omit(ind[as.numeric(id_slurm),])){
   y <- rpareto(n, scale = scale, shape = shapes)
 
   ##------ Starting value ----------------
-  # sv <- starting_values(y, p)
-  
-  ##------ MLE estimation ----------------
-  t1 <- Sys.time()
-  # fit_mle <- paretoMle(y, x, start = sv, maxit = 1e3)
-  fit_mle <- vglm(y ~ x, paretoff, coefstart = sv)
-  t2 <- Sys.time()
-  if(fit_mle$conv == 0) {
-    res$mle[m,] <- c(Coef(fit_mle), fit_mle@extra$scale)
-    res$time[,"mle"][m] <- difftime(t2,t1,units="secs")
-  }
+  sv <- starting_values(y, p)
   
   ##------ Initial estimator (inconsistent, Tukey's weights) ----------------
   t1 <- Sys.time()
@@ -85,28 +71,31 @@ for(m in na.omit(ind[as.numeric(id_slurm),])){
   res$initial[m,] <- c(fit_initial$coefficients, fit_initial$scale)
   res$time[,"initial"][m] <- difftime(t2,t1,units="secs")
 
- 
+  ##------ MLE estimation ----------------
+  t1 <- Sys.time()
+  fit_mle <- vglm(y~x, paretoff, coeffstart = sv)
+  t2 <- Sys.time()
+  res$mle[m,] <- c(Coef(fit_mle), fit_mle@extra$scale)
+  res$time[,"mle"][m] <- difftime(t2,t1,units="secs")
 
     ##------ Iterative bootstrap bias correction ------------
-  if(fit_mle$conv == 0) {
-  t1 <- Sys.time()
-  fit_jimi_mle <- ib(fit_mle, control = list(H=100, seed=seed$sc[m], verbose=T))
-  fit_jimi_mle <- paretoWmle1_ib(x, thetastart=res$mle[m,], c=Inf, seed=seed$sc[m], H=H)
-  t2 <- Sys.time()
-  if(!is.finite(fit_jimi_mle$test_theta)) next
-  res$jimi_mle[m,] <- fit_jimi_mle$estimate
-  res$time[,"jimi_mle"][m] <- difftime(t2,t1,units="secs")
-  }
+  # t1 <- Sys.time()
+  # fit_jimi_mle <- pareto_vglm_ib(x, thetastart=res$mle[m,], seed=seed$sc[m], H=H)
+  # t2 <- Sys.time()
+  # if(!is.finite(fit_jimi_mle$test_theta)) next
+  # res$jimi_mle[m,] <- fit_jimi_mle$estimate
+  # res$time[,"jimi_mle"][m] <- difftime(t2,t1,units="secs")
 
   ##------ Iterative bootstrap bias correction ------------
-  t1 <- Sys.time()
-  fit_jimi_rob <- paretoWmle1_ib(x, thetastart=res$initial[m,], c=cc, seed=seed$sc[m], H=H)
-  t2 <- Sys.time()
-  if(!is.finite(fit_jimi_rob$test_theta)) next
-  res$jimi_rob[m,] <- fit_jimi_rob$estimate
-  res$time[,"jimi_rob"][m] <- difftime(t2,t1,units="secs")
+  # t1 <- Sys.time()
+  # fit_jimi_rob <- paretoWmle1_ib(x, thetastart=res$initial[m,], c=cc, seed=seed$sc[m], H=H)
+  # t2 <- Sys.time()
+  # if(!is.finite(fit_jimi_rob$test_theta)) next
+  # res$jimi_rob[m,] <- fit_jimi_rob$estimate
+  # res$time[,"jimi_rob"][m] <- difftime(t2,t1,units="secs")
   
   # save results
-  save(res, file=paste0("tmp/",model,"_setting_",setting,"_id_",id_slurm,".rds"))
+  # save(res, file=paste0("tmp/",model,"_setting_",setting,"_id_",id_slurm,".rds"))
   cat(m,"\n")
 }
+

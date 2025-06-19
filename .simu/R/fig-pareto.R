@@ -3,23 +3,22 @@ source(".simu/R/figures.R")
 # -----------------
 # Consistent case
 # -----------------
-
-load(".simu/data/pareto_1_setting_1.rds")
-sum(apply(res$jimi_mle,2,var,na.rm=T)) / sum(apply(res$jimi_rob,2,var,na.rm=T))
+load(".simu/data/pareto_2_setting_1.rds")
+sum(apply(res$jimi_mle,2,sd,na.rm=T)) / sum(apply(res$jimi_rob,2,sd,na.rm=T))
 n_setting <- 1
-n_methods <- length(res$setting$method)
-method_names <- gsub(" ==.*","",res$setting$method)
-p <- as.integer(res$setting$p) +1
+n_methods <- 2#length(res$setting$method)
+method_names <- gsub(" ==.*","",res$setting$method)[c(1,4)]
+p <- as.integer(res$setting$p) +2
 MC <- as.integer(res$setting$MC)
 super_res <- list(setting1 = array(dim=c(MC,p[1],n_methods)))
-for(i in seq_along(n_methods)) super_res[[1]][,,i] <- res[[method_names[i]]]
-lab_beta <- c(paste0("$\\beta_",0:4,"$"),"$\\y_{\text{min}}$")
-lab_methods <- method_names
+for(i in seq_len(n_methods)) super_res[[1]][,,i] <- res[[method_names[i]]]
+lab_beta <- c(paste0("$\\beta_",0:4,"$"))
+lab_methods <- gsub("_"," ",toupper(method_names))
 lab_main <- paste0("$n=",res$setting$n,"$, $p=",res$setting$p,"$")
 beta <- str2expression(res$setting$beta)
 eval(beta)
-theta0 <- c(beta[1:5], 5)
-ind <- list(setting1 = as.list(1,2,3,4,p+2))
+theta0 <- c(beta[1:5])
+ind <- list(setting1 = list(1,2,3,4,5))
 cols <- gg_color_hue(n_methods, alpha = 1)
 pchs <- c(15:(15+n_methods-1))
 y_lim <- c(-4,4)
@@ -31,28 +30,24 @@ allplot(results = super_res, index = ind, theta = theta0, lab_par = lab_beta,
 # Consistent case
 # -----------------
 
-# load(".simu/data/roblogistic_2_n_200_p_20.rds")
-load(".simu/data/roblogistic_1_setting_2.rds")
-sum(apply(res$br,2,var)) / sum(apply(res$jimi,2,var))
+load(".simu/data/pareto_1_setting_1.rds")
 n_setting <- 1
-n_methods <- length(res$setting$method)-1
-p <- as.integer(res$setting$p) +1
+n_methods <- 2#length(res$setting$method)
+method_names <- gsub(" ==.*","",res$setting$method)[c(1,4)]
+p <- as.integer(res$setting$p) +2
 MC <- as.integer(res$setting$MC)
 super_res <- list(setting1 = array(dim=c(MC,p[1],n_methods)))
-super_res[[1]][,,1] <- res$jimi
-super_res[[1]][,,2] <- res$robCR
-super_res[[1]][,,3] <- res$robBY
-super_res[[1]][,,4] <- res$mle
-super_res[[1]][,,5] <- res$br
-lab_beta <- c("$\\beta_0$","$\\beta_{1}$","$\\beta_{2}$",
-              "$\\beta_{4:p}$")
-lab_methods <- c("JIMI","CR","BY","MLE","BR")
+for(i in seq_len(n_methods)) super_res[[1]][,,i] <- res[[method_names[i]]]
+lab_beta <- c(paste0("$\\beta_",0:4,"$"))
+lab_methods <- gsub("_"," ",toupper(method_names))
 lab_main <- paste0("$n=",res$setting$n,"$, $p=",res$setting$p,"$")
-theta0 <- c(.3, -2, -4, 0)
-ind <- list(setting1 = list(1,2,3,4:p))
+beta <- str2expression(res$setting$beta)
+eval(beta)
+theta0 <- c(beta[1:5])
+ind <- list(setting1 = list(1,2,3,4,5))
 cols <- gg_color_hue(n_methods, alpha = 1)
 pchs <- c(15:(15+n_methods-1))
 y_lim <- c(-4,4)
 allplot(results = super_res, index = ind, theta = theta0, lab_par = lab_beta, 
         lab_mth = lab_methods, lab_set = lab_main, cols = cols, pchs = pchs, 
-        path = paste0(getwd(),"/.simu/"), extension = "roblogistic_outliers", p = p, y_lim=y_lim)
+        path = paste0(getwd(),"/.simu/"), extension = "pareto_outliers", p = p, y_lim=y_lim)

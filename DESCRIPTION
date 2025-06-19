@@ -39,5 +39,5 @@ RdMacros: Rdpack
 URL: https://github.com/SMAC-Group/JINIpaper
 BugReports: https://github.com/SMAC-Group/JINIpaper/issues/
 LinkingTo: BH (>= 1.75), Rcpp, RcppEigen (>= 0.3.3.9), RcppNumerical
-RoxygenNote: 7.2.3
+RoxygenNote: 7.3.2
 VignetteBuilder: knitr

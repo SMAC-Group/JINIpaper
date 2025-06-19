@@ -1,5 +1,5 @@
 #' @name JINIpaper
-#' @docType package
+#' @keywords internal
 #' @useDynLib JINIpaper
 #' @importFrom Rcpp sourceCpp
-NULL
+"_PACKAGE"
