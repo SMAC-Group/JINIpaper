@@ -184,13 +184,23 @@ robmisclogisticWmle1_ib <- function(x, thetastart, c = 4.685061, H = 200, maxit=
       seed1 <- seed + h
       sim <- r_logistic_misc(t0, x, seed1, FN, FP)
       # sim <- r_logistic(t0, x, seed1)
-      fit_tmp <- roblogisticWmle1(sim, x, t0, c)
+      if(is.infinite(c)) {
+        fit_tmp <- logistic_misclassification_mle(x, sim, fp = 0, fn = 0)
+      } else {
+        fit_tmp <- roblogisticWmle1(sim, x, t0, c)
+      }
+      # fit_tmp <- roblogisticWmle1(sim, x, t0, c)
       iter <- 1L
       while(fit_tmp$conv == 1 && iter < 10L){
         seed1 <- seed + H * h + iter
         sim <- r_logistic_misc(t0, x, seed1, FN, FP)
         # sim <- r_logistic(t0, x, seed1)
-        fit_tmp <- roblogisticWmle1(sim, x, t0, c)
+        # fit_tmp <- roblogisticWmle1(sim, x, t0, c)
+        if(is.infinite(c)) {
+          fit_tmp <- logistic_misclassification_mle(x, sim, fp = 0, fn = 0)
+        } else {
+          fit_tmp <- roblogisticWmle1(sim, x, t0, c)
+        }
         iter <- iter + 1L
       }
       if(fit_tmp$conv == 1) next
