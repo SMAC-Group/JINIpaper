@@ -56,7 +56,7 @@ r_logistic_rm <- function(thetas, x, seed, FN, FP, eps){
   as.integer(y)
 }
 ##------------------ Setting ----------------
-setting <- as.integer(Sys.getenv("SETTING"))
+setting <- Sys.getenv("SETTING")
 n <- as.integer(Sys.getenv("N"))
 p <- as.integer(Sys.getenv("P"))
 beta <- str2expression(Sys.getenv("BETA"))
@@ -66,6 +66,7 @@ eval(Sigma)
 design <- str2expression(Sys.getenv("DESIGN"))
 cc <- as.numeric(Sys.getenv("C"))
 FN <- as.numeric(Sys.getenv("FN"))
+eps <- as.numeric(Sys.getenv("eps"))
 
 set.seed(as.integer(Sys.getenv("SEED")))
 seed <- list()
@@ -77,12 +78,14 @@ seed$sc <- sample.int(1e7,MC)
 res <- list(mle = matrix(ncol=p+1,nrow=MC),
             br = matrix(ncol=p+1,nrow=MC),
             initial = matrix(ncol=p+1,nrow=MC),
-            jimi = matrix(ncol=p+1,nrow=MC),
-	    time = matrix(ncol=7, nrow=MC), 
+            jini = matrix(ncol=p+1,nrow=MC),
+            initialc = matrix(ncol=p+1,nrow=MC),
+            jinic = matrix(ncol=p+1,nrow=MC),
+	    time = matrix(ncol=9, nrow=MC), 
             consistent = matrix(ncol=p+1,nrow=MC),
             robCR = matrix(ncol=p+1,nrow=MC),
             robBY = matrix(ncol=p+1,nrow=MC))
-colnames(res$time) <- c("mle", "br", "initial", "jimi", "consistent", "robCR", "robBY") 
+colnames(res$time) <- c("mle", "br", "initialc", "jinic", "consistent", "robCR", "robBY", "initial", "jini") 
 
 ##------------------ Slurm specs --------------
 n_array <- as.integer(Sys.getenv("N_ARRAY"))
@@ -99,7 +102,7 @@ for(m in na.omit(ind[as.numeric(id_slurm),])){
   # simulate logistic
   # y <- simulation(logistic_object, 
   #                 control = list(seed=seed$process[m], sim=outlying_mechanism, eps=0.00)) 
-  y <- r_logistic_rm(thetas=beta, x=x, seed=seed$process[m], FN=FN, FP=0.0, eps=0.00)
+  y <- r_logistic_rm(thetas=beta, x=x, seed=seed$process[m], FN=FN, FP=0.0, eps=eps)
   
   ##------ MLE estimation ----------------
   t1 <- Sys.time()
@@ -141,8 +144,8 @@ for(m in na.omit(ind[as.numeric(id_slurm),])){
   t1 <- Sys.time()
   fit_initial <- roblogisticWmle1(y, x, start = coef(fit_mle), c = cc) 
   t2 <- Sys.time()
-  res$initial[m,] <- fit_initial$coefficients
-  res$time[,"initial"][m] <- difftime(t2,t1,units="secs")
+  res$initialc[m,] <- fit_initial$coefficients
+  res$time[,"initialc"][m] <- difftime(t2,t1,units="secs")
 #
 #  ##------ Consistent WMLE (Tukey's weights) ----------------
 #  t1 <- Sys.time()
@@ -157,11 +160,30 @@ for(m in na.omit(ind[as.numeric(id_slurm),])){
   fit_jimi <- robmisclogisticWmle1_ib(x, thetastart=fit_initial$coefficients, c=cc, seed=seed$sc[m], FN=FN)
   t2 <- Sys.time()
   if(!is.finite(fit_jimi$test_theta)) next
-  res$jimi[m,] <- fit_jimi$estimate
-  res$time[,"jimi"][m] <- difftime(t2,t1,units="secs")
-#  
+  res$jinic[m,] <- fit_jimi$estimate
+  res$time[,"jinic"][m] <- difftime(t2,t1,units="secs")
+
+   ##------ Initial estimator (inconsistent, Tukey's weights) ----------------
+  t1 <- Sys.time()
+  #fit_initial <- roblogisticWmle1(y, x, start = coef(fit_mle), c = Inf) 
+  fit_initial <- logistic_misclassification_mle(x, y, fp = 0, fn = 0)
+  t2 <- Sys.time()
+  #res$initial[m,] <- fit_initial$coefficients
+  res$initial[m,] <- fit_initial
+  res$time[,"initial"][m] <- difftime(t2,t1,units="secs")
+
+  ##------ Iterative bootstrap bias correction ------------
+  t1 <- Sys.time()
+  #fit_jimi <- roblogisticWmle1_ib(x, thetastart=fit_initial$coefficients, c=cc, seed=seed$sc[m])
+  fit_jimi <- robmisclogisticWmle1_ib(x, thetastart=fit_initial, c=Inf, seed=seed$sc[m], FN=FN)
+  t2 <- Sys.time()
+  if(!is.finite(fit_jimi$test_theta)) next
+  res$jini[m,] <- fit_jimi$estimate
+  res$time[,"jini"][m] <- difftime(t2,t1,units="secs")
+
+  
 #  # save results
 #  save(res, file=paste0("tmp/",model,"_setting_",setting,"_id_",id_slurm,".rds"))
-  save(res, file=paste0("tmp/",model,"_setting_",setting,"_id_",id_slurm,".rds"))
+  save(res, file=paste0("tmp/rm_logistic_setting_",setting,"_id_",id_slurm,".rds"))
   cat(m,"\n")
 }

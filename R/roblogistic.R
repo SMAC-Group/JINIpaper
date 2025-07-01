@@ -148,8 +148,8 @@ r_logistic_misc <- function(thetas, x, seed, FN, FP){
   eta <- cbind(1,x) %*% thetas
   prob <- exp(eta) / (1 + exp(eta))
   mu_star <- FP * (1 - prob) + (1 - FN) * prob
-  # rbinom(n, size=1, prob=mu_star)
-  ifelse(runif(n) < mu_star, 1, 0)
+  rbinom(n, size=1, prob=mu_star)
+  # ifelse(runif(n) < mu_star, 1, 0)
 }
 
 
@@ -185,7 +185,9 @@ robmisclogisticWmle1_ib <- function(x, thetastart, c = 4.685061, H = 200, maxit=
       sim <- r_logistic_misc(t0, x, seed1, FN, FP)
       # sim <- r_logistic(t0, x, seed1)
       if(is.infinite(c)) {
-        fit_tmp <- logistic_misclassification_mle(x, sim, fp = 0, fn = 0)
+        fit_tmp <- list()
+        fit_tmp$coefficients <- logistic_misclassification_mle(x, sim, fp = 0, fn = 0)
+        fit_tmp$conv <- 0
       } else {
         fit_tmp <- roblogisticWmle1(sim, x, t0, c)
       }
@@ -197,7 +199,9 @@ robmisclogisticWmle1_ib <- function(x, thetastart, c = 4.685061, H = 200, maxit=
         # sim <- r_logistic(t0, x, seed1)
         # fit_tmp <- roblogisticWmle1(sim, x, t0, c)
         if(is.infinite(c)) {
-          fit_tmp <- logistic_misclassification_mle(x, sim, fp = 0, fn = 0)
+          fit_tmp <- list()
+          fit_tmp$coefficients <- logistic_misclassification_mle(x, sim, fp = 0, fn = 0)
+          fit_tmp$conv <- 0
         } else {
           fit_tmp <- roblogisticWmle1(sim, x, t0, c)
         }
